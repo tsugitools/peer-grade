@@ -1,5 +1,5 @@
 <?php
-require_once "../../config.php";
+require_once "../config.php";
 use \Tsugi\Grades\GradeUtil;
 require_once "peer_util.php";
 
