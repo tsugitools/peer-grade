@@ -7,6 +7,7 @@ require_once "peer_util.php";
 use \Tsugi\Core\Cache;
 use \Tsugi\Core\LTIX;
 use \Tsugi\Core\Result;
+use \Tsugi\UI\Table;
 use \Tsugi\Grades\GradeUtil;
 
 // Sanity checks
@@ -18,8 +19,8 @@ if ( !isset($_REQUEST['user_id']) ) {
 }
 $user_id = $_REQUEST['user_id'];
 
-$url_goback = 'gallery.php';
-$url_stay = 'gallery-detail.php';
+$url_goback = Table::makeUrl('gallery.php', $_GET, Array('user_id'=>false));
+$url_stay = Table::makeUrl('gallery-detail.php', $_GET, Array('user_id'=>false));
 
 // Model
 $row = loadAssignment();

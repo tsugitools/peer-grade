@@ -43,7 +43,7 @@ if ( $USER->instructor ) {
     $orderfields =  array("S.user_id", "rating", "displayname", "email", "S.created_at", "S.updated_at", "user_key", "max_score", "scores", "flagged", "min_score", "inst_points", "S.note");
     $searchfields = array("S.user_id", "displayname", "email", "S.created_at", "S.updated_at", "user_key", "S.note");
 } else {
-    $orderfields =  array("S.created_at", "S.updated_at", "rating");
+    $orderfields =  array("S.created_at", "S.updated_at", "my_rating", "S.rating");
     $searchfields = false;
     if ( $assn_json->notepublic == "true" ) {
         $orderfields[] = "note";
@@ -62,6 +62,7 @@ $sql =
         $ratings
         $count_scores
         $inst_points 
+        G.rating AS my_rating,
         COUNT(DISTINCT flag_id) as flagged,
         MAX(G.updated_at) AS updated_at, user_key,
         S.created_at
@@ -110,15 +111,38 @@ $OUTPUT->welcomeUserCourse();
 
 // Make us a paged table - leave default sort order "whatever"
 $parm = $_GET;
+$parm['page_length'] = 40;  // Make twice as long
 
 $newsql = Table::pagedQuery($sql, $query_parms, $searchfields, $orderfields, $parm);
 
 $rows = $PDOX->allRowsDie($newsql, $query_parms);
 
 if ( $USER->instructor ) {
-    $view = "student.php";
+    $view = Table::makeUrl("student.php",$parm);
 } else {
-    $view = "gallery-detail.php";
+    $view = Table::makeUrl("gallery-detail.php",$parm);
+}
+
+if ( $assn_json->galleryformat == 'table' ) {
+    $newrows = array();
+    foreach($rows as $row ) {
+        $newrow = array();
+        $submit_json = json_decode($row['json']);
+        $newrow['user_id'] = $row['user_id'];
+        $note = $submit_json->notes;
+        if ( strlen($note) < 1 ) $note = "Note missing.";
+        if ( strlen($note) > 200 ) {
+            $note = substr($note, 0, 200);
+        }
+        $newrow['description']= $note;
+        $newrow['rating'] = $row['rating'];
+        $newrow['my_rating'] = $row['my_rating'];
+        $newrows[] = $newrow;
+    }
+    
+    Table::pagedTable($newrows, $searchfields, $orderfields, $view, $parm, array('Exit' => 'index.php'));
+    $OUTPUT->footer();
+    return;
 }
 
 Table::pagedHeader($rows, $searchfields, $orderfields, $view, $parm, array('Exit' => 'index.php'));

@@ -130,6 +130,8 @@ new assignment.
 of other student submissions.   You can indicate if a student can access the gallery 
 before their subission or after their submission.
 </li>
+<li>galleryformat - can be "card" or "table".  The default is "card".
+</li>
 <li>totalpoints - this is the number of points for the assignment.   
 The value for totalpoints must be the sum of instructorpoints, 
 peerpoints, and assesspoints*minassess. 
