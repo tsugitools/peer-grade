@@ -40,7 +40,7 @@ if ( $USER->instructor || $assn_json->gallery == 'always') {
 // Gets counts and max of the submissions
 $query_parms = array(":LID" => $LINK->id, ":CUR_USER" => $USER->id);
 if ( $USER->instructor ) {
-    $orderfields =  array("S.user_id", "rating", "displayname", "email", "S.created_at", "S.updated_at", "user_key", "max_score", "scores", "flagged", "min_score", "inst_points", "S.note");
+    $orderfields =  array("S.user_id", "S.rating", "my_rating", "displayname", "email", "S.created_at", "S.updated_at", "user_key", "max_score", "scores", "flagged", "min_score", "inst_points", "S.note");
     $searchfields = array("S.user_id", "displayname", "email", "S.created_at", "S.updated_at", "user_key", "S.note");
 } else {
     $orderfields =  array("S.created_at", "S.updated_at", "my_rating", "S.rating");
@@ -119,11 +119,7 @@ $newsql = Table::pagedQuery($sql, $query_parms, $searchfields, $orderfields, $pa
 
 $rows = $PDOX->allRowsDie($newsql, $query_parms);
 
-if ( $USER->instructor ) {
-    $view = Table::makeUrl("student.php",$parm);
-} else {
-    $view = Table::makeUrl("gallery-detail.php",$parm);
-}
+$view = Table::makeUrl("gallery-detail.php",$parm);
 
 if ( $assn_json->galleryformat == 'table' ) {
     $newrows = array();
