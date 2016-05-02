@@ -19,16 +19,18 @@ if ( $assn_json == null ) die('Not yet configured');
 
 // Gets counts and max of the submissions
 $query_parms = array(":LID" => $LINK->id);
-$orderfields =  array("S.user_id", "displayname", "email", "S.updated_at", "user_key", "max_score", "scores", "flagged", "min_score", "inst_points");
+$orderfields =  array("S.user_id", "displayname", "email", "S.updated_at", "user_key", "S.rating", "max_score", "scores", "flagged", "min_score", "inst_points");
 $searchfields = array("S.user_id", "displayname", "email", "S.updated_at", "user_key");
 
 // Load up our data dpending on the kind of assessment we have
 $inst_points = $assn_json->instructorpoints > 0 ? "inst_points, " : "";
 $max_min_scores = $assn_json->peerpoints > 0 ? "MAX(points) as max_score, MIN(points) AS min_score," : "";
 $count_scores = $assn_json->maxassess > 0 ? "COUNT(points) as scores," : "";
+$ratings = $assn_json->rating > 0 ? "S.rating AS rating," : "";
 $sql =
     "SELECT S.user_id AS user_id, displayname, email, S.submit_id as _submit_id,
         $max_min_scores
+        $ratings
         $count_scores
         $inst_points 
         COUNT(DISTINCT flag_id) as flagged,
