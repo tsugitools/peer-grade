@@ -1,4 +1,4 @@
 <?php
 
-$STUDENT_RETURN = "gallery-detail.php?user_id=".$_REQUEST['user_id'];
+$STUDENT_RETURN = Table::makeUrl('gallery-detail.php', $_GET);
 require_once("student.php");

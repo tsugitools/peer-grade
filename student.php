@@ -8,9 +8,15 @@ use \Tsugi\Core\Cache;
 use \Tsugi\Core\LTIX;
 use \Tsugi\Core\Result;
 use \Tsugi\Core\User;
+use \Tsugi\UI\Table;
 use \Tsugi\Grades\GradeUtil;
 
-if ( !isset($STUDENT_RETURN) ) $STUDENT_RETURN = "admin.php";
+// Set up the GET Params that we want to carry around.
+$getparms = $_GET;
+unset($getparms['delete']);
+unset($getparms['resend']);
+
+if ( !isset($STUDENT_RETURN) ) $STUDENT_RETURN = Table::makeUrl('admin.php', $getparms, Array('user_id'=>false));
 
 // Sanity checks
 $LAUNCH = LTIX::requireData();
@@ -97,14 +103,16 @@ if ( isset($_POST['instSubmit']) || isset($_POST['instSubmitAdvance']) ) {
         $points = $points + 0;
     } else {
         $_SESSION['error'] = "Points must either by a number or blank.";
-        header( 'Location: '.addSession('student.php?user_id='.$user_id) ) ;
+        $studenturl = Table::makeUrl('student.php', $getparms);
+        header( 'Location: '.addSession($studenturl) ) ;
         return;
     }
 
     // Check the range here
     if ( $points < 0 || $points > $assn_json->instructorpoints ) {
         $_SESSION['error'] = "Bad value for instructor point value.";
-        header( 'Location: '.addSession('student.php?user_id='.$user_id) ) ;
+        $studenturl = Table::makeUrl('student.php', $getparms);
+        header( 'Location: '.addSession($studenturl) ) ;
         return;
     }
 
@@ -133,9 +141,11 @@ if ( isset($_POST['instSubmit']) || isset($_POST['instSubmitAdvance']) ) {
     }
     if ( isset($_POST['instSubmitAdvance']) && isset($_POST['next_user_id_ungraded']) && is_numeric($_POST['next_user_id_ungraded']) ) {
         $next_user_id_ungraded = $_POST['next_user_id_ungraded']+0;
-        header( 'Location: '.addSession('student.php?user_id='.$next_user_id_ungraded) ) ;
+        $studenturl = Table::makeUrl('student.php', $getparms, Array("user_id" => $next_user_id_ungraded));
+        header( 'Location: '.addSession($studenturl) ) ;
     } else {
-        header( 'Location: '.addSession('student.php?user_id='.$user_id) ) ;
+        $studenturl = Table::makeUrl('student.php', $getparms);
+        header( 'Location: '.addSession($studenturl) ) ;
     }
     return;
 }
@@ -157,7 +167,8 @@ if ( isset($_POST['resendSubmit']) ) {
         $_SESSION['error'] = 'Error: '.$status;
     }
     $_SESSION['debug_log'] = $debug_log;
-    header( 'Location: '.addSession('student.php?user_id='.$user_id) ) ;
+    $studenturl = Table::makeUrl('student.php', $getparms);
+    header( 'Location: '.addSession($studenturl) ) ;
     return;
 }
 
@@ -184,7 +195,8 @@ if ( isset($_POST['grade_id']) && isset($_POST['deleteGrade']) ) {
     Cache::clear('peer_grade');
     error_log("Instructor deleted grade entry for ".$user_id);
     $_SESSION['success'] = "Grade entry deleted.";
-    header( 'Location: '.addSession('student.php?user_id='.$user_id) ) ;
+    $studenturl = Table::makeUrl('student.php', $getparms);
+    header( 'Location: '.addSession($studenturl) ) ;
     return;
 }
 
@@ -224,7 +236,8 @@ if ( isset($_POST['flag_id']) && isset($_POST['deleteFlag']) ) {
     Cache::clear('peer_grade');
     error_log("Instructor deleted flag=".$_POST['flag_id']." for ".$user_id);
     $_SESSION['success'] = "Flag entry deleted.";
-    header( 'Location: '.addSession('student.php?user_id='.$user_id) ) ;
+    $studenturl = Table::makeUrl('student.php', $getparms);
+    header( 'Location: '.addSession($studenturl) ) ;
     return;
 }
 
@@ -276,9 +289,10 @@ if ( $assn_json->instructorpoints > 0 && count($ungraded_rows) > 0 ) {
 $user_display = false;
 echo('<div style="float:right">');
 if ( $prev_user_id !== false ) {
+    $studenturl = Table::makeUrl('student.php', $getparms, Array("user_id" => $prev_user_id));
     echo('<button class="btn btn-normal"
         title="Students are ordered by user_id" 
-        onclick="location=\''.addSession("student.php?user_id=$prev_user_id").'\'; 
+        onclick="location=\''.addSession($studenturl).'\'; 
         return false">Previous Student</button> ');
 } else {
     echo('<button class="btn btn-normal" 
@@ -287,9 +301,10 @@ if ( $prev_user_id !== false ) {
 }
 
 if ( $next_user_id !== false ) {
+    $studenturl = Table::makeUrl('student.php', $getparms, Array("user_id" => $next_user_id));
     echo('<button class="btn btn-normal" 
         title="Students are ordered by user_id" 
-        onclick="location=\''.addSession("student.php?user_id=$next_user_id").'\'; 
+        onclick="location=\''.addSession($studenturl).'\'; 
         return false">Next Student</button> ');
 } else {
     echo('<button class="btn btn-normal" 
@@ -298,10 +313,10 @@ if ( $next_user_id !== false ) {
 }
 
 if ( $next_user_id_ungraded !== false ) {
+    $studenturl = Table::makeUrl('student.php', $getparms, Array("user_id" => $next_user_id_ungraded));
     echo('<button class="btn btn-normal" 
-        title="At the end of ungraded students
-this goes back to the first ungraded student." 
-        onclick="location=\''.addSession("student.php?user_id=$next_user_id_ungraded").'\'; 
+        title="At the end of ungraded students this goes back to the first ungraded student." 
+        onclick="location=\''.addSession($studenturl).'\'; 
         return false">Next Ungraded Student</button> ');
 } else if ( $assn_json->instructorpoints > 0 ) {
     echo('<button class="btn btn-normal" i
@@ -354,10 +369,17 @@ if ( $next_user_id_ungraded !== false ) {
 echo('</form>');
 
 if ( $assn_json->maxassess > 0 ) {
-    echo('<p><a href="grade.php?user_id='.$user_id.'">Peer grade this student</a></p>'."\n");
+    $gradeurl = Table::makeUrl('grade.php', $getparms);
+    echo('<p><a href="'.$gradeurl.'">Peer grade this student</a></p>'."\n");
+}
+
+if ( $assn_json->rating > 0 ) {
+    $rateadmin = Table::makeUrl('rate-admin.php', $getparms);
+    echo('<p><a href="'.$rateadmin.'">Rate this student</a></p>'."\n");
 }
 
 if ( isset($_GET['delete']) ) {
+    $studenturl = Table::makeUrl('student.php', $getparms);
     echo('<form method="post">
         <input type="hidden" name="user_id" value="'.$user_id.'">
         <label for="deleteNote">Enter an optional note to send to the student</label><br/>
@@ -365,10 +387,11 @@ if ( isset($_GET['delete']) ) {
         </textarea><br/>
         <input type="submit" name="deleteSubmit" value="Complete Delete" class="btn btn-danger">
         <input type="submit" name="doCancel" value="Cancel Delete" class="btn btn-normal"
-            onclick="location=\''.addSession('student.php?user_id='.$user_id).'\'; return false;">
+            onclick="location=\''.addSession($studenturl).'\'; return false;">
         </form>');
 } else {
-    echo('<p><a href="student.php?delete=yes&user_id='.$user_id.'">Delete this
+    $studenturl = Table::makeUrl('student.php', $getparms, Array("delete" => "yes"));
+    echo('<p><a href="'.$studenturl.'">Delete this
         submission and grades (allows student to resubmit)</a></p>'."\n");
 }
 
@@ -378,14 +401,16 @@ if ( $assn_json->totalpoints == 0 ) {
     echo("<p>Computed grade: ".$computed_grade."<br/>\n");
 
     if ( isset($_GET['resend']) ) {
+        $studenturl = Table::makeUrl('student.php', $getparms);
         echo('<form method="post">
             <input type="hidden" name="user_id" value="'.$user_id.'">
             <input type="submit" name="resendSubmit" value="Resend the Grade" class="btn btn-warning">
             <input type="submit" name="doCancel" value="Cancel Resend" class="btn btn-normal"
-                onclick="location=\''.addSession('student.php?user_id='.$user_id).'\'; return false;">
+                onclick="location=\''.addSession($studenturl).'\'; return false;">
             </form>');
     } else {
-        echo('<p><a href="student.php?resend=yes&user_id='.$user_id.'">
+        $studenturl = Table::makeUrl('student.php', $getparms, Array("resend" => "yes"));
+        echo('<p><a href="'.$studenturl.'">
             Resend computed grade to the LMS</a></p>');
     }
 }
