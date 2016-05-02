@@ -38,7 +38,7 @@ if ( $USER->instructor || $assn_json->gallery == 'always') {
 }
 
 // Gets counts and max of the submissions
-$query_parms = array(":LID" => $LINK->id);
+$query_parms = array(":LID" => $LINK->id, ":CUR_USER" => $USER->id);
 if ( $USER->instructor ) {
     $orderfields =  array("S.user_id", "rating", "displayname", "email", "S.created_at", "S.updated_at", "user_key", "max_score", "scores", "flagged", "min_score", "inst_points", "S.note");
     $searchfields = array("S.user_id", "displayname", "email", "S.created_at", "S.updated_at", "user_key", "S.note");
@@ -53,16 +53,16 @@ if ( $USER->instructor ) {
 
 // Load up our data dpending on the kind of assessment we have
 $inst_points = $assn_json->instructorpoints > 0 ? "inst_points, " : "";
-$max_min_scores = $assn_json->peerpoints > 0 ? "MAX(points) as max_score, MIN(points) AS min_score," : "";
+$max_min_scores = $assn_json->peerpoints > 0 ? "MAX(G.points) as max_score, MIN(G.points) AS min_score," : "";
 $ratings = $assn_json->rating > 0 ? "S.rating AS rating," : "";
-$count_scores = $assn_json->maxassess > 0 ? "COUNT(points) as scores," : "";
+$count_scores = $assn_json->maxassess > 0 ? "COUNT(G.points) as scores," : "";
 $sql =
     "SELECT S.user_id AS user_id, displayname, email, S.json, S.submit_id as _submit_id, S.note AS note,
         $max_min_scores
         $ratings
         $count_scores
         $inst_points 
-        G.rating AS my_rating,
+        G2.rating AS my_rating,
         COUNT(DISTINCT flag_id) as flagged,
         MAX(G.updated_at) AS updated_at, user_key,
         S.created_at
@@ -70,6 +70,8 @@ $sql =
         ON A.assn_id = S.assn_id
     LEFT JOIN {$p}peer_grade AS G
         ON S.submit_id = G.submit_id
+    LEFT JOIN {$p}peer_grade AS G2
+        ON S.submit_id = G2.submit_id AND G2.user_id = :CUR_USER
     LEFT JOIN {$p}peer_flag AS F
         ON S.submit_id = F.submit_id
     JOIN {$p}lti_user AS U
