@@ -329,7 +329,7 @@ echo("</div>");
 
 if ( $user_row != false ) {
     $user_display = htmlent_utf8($user_row['displayname'])." (".htmlent_utf8($user_row['email']).")";
-    echo("<p><b>Grade record for: ".$user_display."</b></p>\n");
+    echo("<p><b>Grade record for: ".htmlent_utf8($user_row['displayname'])."</b></p>\n");
 }
 echo('<br clear="all"/>');
 
