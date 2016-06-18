@@ -54,7 +54,7 @@ if ( $USER->instructor ) {
 // Load up our data dpending on the kind of assessment we have
 $inst_points = $assn_json->instructorpoints > 0 ? "inst_points, " : "";
 $max_min_scores = $assn_json->peerpoints > 0 ? "MAX(G.points) as max_score, MIN(G.points) AS min_score," : "";
-$ratings = $assn_json->rating > 0 ? "S.rating AS rating," : "";
+$ratings = $assn_json->rating > 0 ? "S.rating AS rating," : "0 AS rating,";
 $count_scores = $assn_json->maxassess > 0 ? "COUNT(G.points) as scores," : "";
 $sql =
     "SELECT S.user_id AS user_id, displayname, email, S.json, S.submit_id as _submit_id, S.note AS note,
