@@ -189,7 +189,11 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
       </div>
       <div class="modal-body">
 <!-- Don't indent or inadvertently add a newline once the pre starts -->
-<pre class="line-numbers"><code class="language-<?php echo($part->language); ?>"><?php echo (htmlentities($row['data'])); ?>
+<pre class="line-numbers"><code 
+<?php if ( isset($part->language) ) { ?>
+class="language-<?php echo($part->language); ?>"
+<?php } ?>
+><?php echo (htmlentities($row['data'])); ?>
 </code>
 </pre>
       </div>
