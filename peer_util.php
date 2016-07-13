@@ -137,7 +137,7 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
             $url = $urls[$urlno++];
             echo ('<p><a href="'.safe_href($url).'" target="_blank">');
             echo (htmlentities(safe_href($url)).'</a> (Will launch in new window)</p>'."\n");
-        } else if ( $part->type == "content_item" ) {
+        } else if ( $part->type == "content_item" && $content_item_no < count($content_items) ) {
             $content_item = $content_items[$content_item_no++];
 
             $endpoint = $content_item->url;
