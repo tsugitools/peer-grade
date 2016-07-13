@@ -133,7 +133,7 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <?php
-        } else if ( $part->type == "url" ) {
+        } else if ( $part->type == "url" && $urlno < count($urls) ) {
             $url = $urls[$urlno++];
             echo ('<p><a href="'.safe_href($url).'" target="_blank">');
             echo (htmlentities(safe_href($url)).'</a> (Will launch in new window)</p>'."\n");
@@ -165,7 +165,7 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
 </div>
 <?php
             $content_item_no++;
-        } else if ( $part->type == "code" ) {
+        } else if ( $part->type == "code" && $codeno < count($codes) ) {
             $code_id = $codes[$codeno++];
             $row = $PDOX->rowDie("
                 SELECT data FROM {$CFG->dbprefix}peer_text 
