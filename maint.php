@@ -130,6 +130,7 @@ function showFrame() {
 </script>
 <?php
 $OUTPUT->bodyStart();
+$OUTPUT->topNav();
 $OUTPUT->flashMessages();
 
 $iframeurl = addSession($CFG->wwwroot . '/mod/peer-grade/maint.php?link_id=' . $link_id);

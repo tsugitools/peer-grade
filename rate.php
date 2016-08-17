@@ -169,6 +169,7 @@ $OUTPUT->header();
 <link href="<?php echo($OUTPUT::getLocalStatic(__FILE__)); ?>/static/prism.css" rel="stylesheet"/>
 <?php
 $OUTPUT->bodyStart();
+$OUTPUT->topNav();
 $OUTPUT->flashMessages();
 
 echo('<div style="border: 1px solid black; padding:3px">');

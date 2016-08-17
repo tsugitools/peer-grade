@@ -49,6 +49,7 @@ $sql =
 // View
 $OUTPUT->header();
 $OUTPUT->bodyStart();
+$OUTPUT->topNav();
 $OUTPUT->flashMessages();
 $OUTPUT->welcomeUserCourse();
 

@@ -108,6 +108,7 @@ pre {padding-left: 2em;}
 </style>
 <?php
 $OUTPUT->bodyStart();
+$OUTPUT->topNav();
 $OUTPUT->flashMessages();
 $OUTPUT->welcomeUserCourse();
 

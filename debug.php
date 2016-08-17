@@ -14,6 +14,7 @@ if ( isset($_POST['doClear']) ) {
 
 $OUTPUT->header();
 $OUTPUT->bodyStart();
+$OUTPUT->topNav();
 $OUTPUT->flashMessages();
 $OUTPUT->welcomeUserCourse();
 

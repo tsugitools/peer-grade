@@ -257,6 +257,7 @@ $OUTPUT->header();
 <link href="<?php echo($OUTPUT::getLocalStatic(__FILE__)); ?>/static/prism.css" rel="stylesheet"/>
 <?php
 $OUTPUT->bodyStart();
+$OUTPUT->topNav();
 $OUTPUT->flashMessages();
 if ( $USER->instructor ) {
     SettingsForm::start();

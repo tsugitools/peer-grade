@@ -75,6 +75,7 @@ $json = LTI::jsonIndent($json);
 // View
 $OUTPUT->header();
 $OUTPUT->bodyStart();
+$OUTPUT->topNav();
 $OUTPUT->flashMessages();
 if ( ! $USER->instructor ) die("Requires instructor role");
 

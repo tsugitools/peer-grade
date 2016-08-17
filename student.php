@@ -273,6 +273,7 @@ $OUTPUT->header();
 <link href="<?php echo($OUTPUT::getLocalStatic(__FILE__)); ?>/static/prism.css" rel="stylesheet"/>
 <?php
 $OUTPUT->bodyStart();
+$OUTPUT->topNav();
 
 $prev_user_id = false;
 $next_user_id = false;
