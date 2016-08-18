@@ -20,6 +20,26 @@ function loadAssignment()
         array(":ID" => $LINK->id)
     );
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $custom = LTIX::customGet('config');
+    // Check custom for errors and make it pretty
+    $custom = json_encode(json_decode($custom),JSON_PRETTY_PRINT);
+    if ( $row === false && strlen($custom) > 1 ) {
+        $stmt = $PDOX->queryReturnError(
+            "INSERT INTO {$CFG->dbprefix}peer_assn
+                (link_id, json, created_at, updated_at)
+                VALUES ( :ID, :JSON, NOW(), NOW())
+                ON DUPLICATE KEY UPDATE json = :JSON, updated_at = NOW()",
+            array(
+                ':JSON' => $custom,
+                ':ID' => $LINK->id)
+            );
+        Cache::clear("peer_assn");
+        $stmt = $PDOX->queryDie(
+            "SELECT assn_id, json FROM {$CFG->dbprefix}peer_assn WHERE link_id = :ID",
+            array(":ID" => $LINK->id)
+        );
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
     $row['json'] = upgradeSubmission($row['json'] );
     Cache::set($cacheloc, $LINK->id, $row);
     return $row;
