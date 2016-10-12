@@ -7,6 +7,7 @@ use \Tsugi\Core\LTIX;
 use \Tsugi\Core\User;
 use \Tsugi\Core\Mail;
 use \Tsugi\Blob\BlobUtil;
+use \Tsugi\UI\Lessons;
 
 // Loads the assignment associated with this link
 function loadAssignment()
@@ -30,6 +31,18 @@ function loadAssignment()
         } else {
             $pretty = json_encode($decode,JSON_PRETTY_PRINT);
             $custom = $pretty;
+        }
+    }
+
+    if ( ( ! $custom || strlen($custom) < 1 ) && isset($_GET["inherit"]) && isset($CFG->lessons) ) {
+        $l = new Lessons($CFG->lessons);
+        if ( $l ) {
+            $lti = $l->getLtiByRlid($_GET['inherit']);
+            if ( isset($lti->custom) ) foreach($lti->custom as $c ) {
+                if (isset($c->key) && isset($c->json) && $c->key == 'config' ) {
+                    $custom = json_encode($c->json, JSON_PRETTY_PRINT);
+                }
+            }
         }
     }
     if ( $row === false && strlen($custom) > 1 ) {
