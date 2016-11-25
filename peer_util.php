@@ -21,7 +21,7 @@ function loadAssignment()
         array(":ID" => $LINK->id)
     );
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    $custom = LTIX::customGet('config');
+    $custom = LTIX::ltiCustomGet('config');
     // Check custom for errors and make it pretty
     if ( strlen($custom) > 1 ) {
         $decode = json_decode($custom);
