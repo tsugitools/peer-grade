@@ -297,7 +297,9 @@ function computeGrade($assn_id, $assn_json, $user_id)
     if ( $gradecount < 0 ) $gradecount = 0;
     if ( $gradecount > $assn_json->minassess ) $gradecount = $assn_json->minassess;
     $gradepoints = $gradecount * $assn_json->assesspoints;
-    return ($inst_points + $assnpoints + $gradepoints) / $assn_json->totalpoints;
+    $retval = ($inst_points + $assnpoints + $gradepoints) / $assn_json->totalpoints;
+    if ( $retval > 1.0 ) $retval = 1.0;
+    return $retval;
 }
 
 // Load the count of grades for this user for an assignment
