@@ -133,14 +133,14 @@ $OUTPUT->bodyStart();
 $OUTPUT->topNav();
 $OUTPUT->flashMessages();
 
-$iframeurl = addSession($CFG->wwwroot . '/mod/peer-grade/maint.php?link_id=' . $link_id);
+$iframeurl = addSession($CFG->getCurrentUrl().'?link_id=' . $link_id);
 ?>
 
 <div>
-<form style="display: inline" method="POST">
+<form style="display: inline" method="post">
   <button name="restartReGrade" class="btn btn-warning">Restart Re-Grade</button>
 </form>
-<form style="display: inline" method="POST" target="my_iframe" action="<?php echo($iframeurl); ?>">
+<form style="display: inline" method="post" target="my_iframe" action="<?php echo($iframeurl); ?>">
   <button name="reGradePeer" onclick="showFrame();" class="btn btn-warning">Re-Compute Peer Grades</button>
   <button onclick="window.close();return false;" class="btn btn-primary">Exit</button>
 </form>
@@ -163,7 +163,7 @@ Link id: <?php echo($link_id);
     if ( isset($LINK->title) ) echo(' '.htmlent_utf8($LINK->title)) ; ?>
 </pre>
 
-<p><b>Remaining Regrades:</b> <span id="total"><img src="<?php echo($OUTPUT->getSpinnerUrl()); ?>"></span>
+<p><b>Remaining Regrades:</b> <span id="total"></span>
 <img id="totspinner" src="<?php echo($OUTPUT->getSpinnerUrl()); ?>" style="display:none">
 </p>
 
@@ -175,7 +175,7 @@ If you want to abort this job, navigate away using "Exit".
 This job may take so long it times out.  If it times out you can restart it
 and it willpick up where it left off.
 </p>
-<iframe id="my_iframe" width="98%" height="600px" style="border: 1px black solid">
+<iframe name="my_iframe" id="my_iframe" width="98%" height="600px" style="border: 1px black solid">
 </iframe>
 </div>
 
@@ -188,7 +188,7 @@ $UPDATE_INTERVAL = false;
 function updateNumbers() {
     window.console && console.log('Calling updateNumbers');
     $.ajaxSetup({ cache: false }); // For IE...
-    $.getJSON('<?php echo(addSession($CFG->wwwroot.'/mod/peer-grade/maintcount.php')); ?>',
+    $.getJSON('<?php echo(addSession($CFG->getCurrentUrlFolder().'/maintcount.php')); ?>',
     function(data) {
         if ( $UPDATE_INTERVAL === false ) $UPDATE_INTERVAL = setInterval(updateNumbers,10000);
         window.console && console.log(data);

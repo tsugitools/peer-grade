@@ -360,8 +360,7 @@ if ( $submit_row == false ) {
             continue;
         }
 
-        $return = $CFG->getCurrentFileUrl(__FILE__);
-        $return = str_replace("/index.php", "/contentitem_return.php?partno=".$partno,$return);
+        $return = $CFG->getCurrentUrlFolder()."/contentitem_return.php?partno=".$partno;
         $return = addSession($return);
 
         $parms = LTIX::getContentItem($return,array());
