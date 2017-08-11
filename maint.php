@@ -52,10 +52,10 @@ if ( isset($_POST['reGradePeer']) ) {
                 ON S.assn_id = A.assn_id
             JOIN {$CFG->dbprefix}lti_result AS R
                 ON S.user_id = R.user_id AND A.link_id = R.link_id
-            JOIN {$CFG->dbprefix}lti_service AS X
-                ON R.service_id = X.service_id
             JOIN {$CFG->dbprefix}lti_user AS U
                 ON R.user_id = U.user_id
+            LEFT JOIN {$CFG->dbprefix}lti_service AS X
+                ON R.service_id = X.service_id
             WHERE S.assn_id = :AID AND regrade IS NULL",
         array(":AID" => $assn_id)
     );
