@@ -37,7 +37,7 @@ if ( $row !== false ) {
 
 if ( $assn_id === false ) {
     $_SESSION['error'] = "This assignment is not yet set up.";
-    header( 'Location: '.addSession('index.php') ) ;
+    header( 'Location: '.addSession('index') ) ;
     return;
 }
 
@@ -51,7 +51,7 @@ if ( $submit_row !== false ) {
 $user_row = User::loadUserInfoBypass($user_id);
 if ( $user_row == false ) {
     $_SESSION['error'] = "Could not load student data.";
-    header( 'Location: '.addSession('index.php') ) ;
+    header( 'Location: '.addSession('index') ) ;
     return;
 }
 
@@ -59,7 +59,7 @@ if ( $user_row == false ) {
 if ( isset($_POST['deleteSubmit']) ) {
     if ( $submit_id == false ) {
         $_SESSION['error'] = "Could not load submission.";
-        header( 'Location: '.addSession('index.php') ) ;
+        header( 'Location: '.addSession('index') ) ;
         return;
     }
     $note = isset($_POST['deleteNote']) ? $_POST['deleteNote'] : '';
@@ -91,7 +91,7 @@ if ( isset($_POST['deleteSubmit']) ) {
 if ( isset($_POST['instSubmit']) || isset($_POST['instSubmitAdvance']) ) {
     if ( $submit_id == false ) {
         $_SESSION['error'] = "Could not load submission.";
-        header( 'Location: '.addSession('index.php') ) ;
+        header( 'Location: '.addSession('index') ) ;
         return;
     }
 
@@ -184,7 +184,7 @@ if ( isset($_POST['grade_id']) && isset($_POST['deleteGrade']) ) {
     }
     if ( ! $found ) {
         $_SESSION['error'] = "Grade entry not found.";
-        header( 'Location: '.addSession('index.php') ) ;
+        header( 'Location: '.addSession('index') ) ;
         return;
     }
     $stmt = $PDOX->queryDie(
@@ -224,7 +224,7 @@ if ( isset($_POST['flag_id']) && isset($_POST['deleteFlag']) ) {
     }
     if ( ! $found ) {
         $_SESSION['error'] = "Flag entry not found.";
-        header( 'Location: '.addSession('index.php') ) ;
+        header( 'Location: '.addSession('index') ) ;
         return;
     }
     $stmt = $PDOX->queryDie(
@@ -370,7 +370,7 @@ if ( $next_user_id_ungraded !== false ) {
 echo('</form>');
 
 if ( $assn_json->maxassess > 0 ) {
-    $gradeurl = Table::makeUrl('grade.php', $getparms);
+    $gradeurl = Table::makeUrl('grade', $getparms);
     echo('<p><a href="'.$gradeurl.'">Peer grade this student</a></p>'."\n");
 }
 

@@ -22,7 +22,7 @@ $OUTPUT->togglePre("Session data",$OUTPUT->safe_var_dump($_SESSION));
 
 ?>
 <form method="post">
-<input type="submit" name="doExit" onclick="location='<?php echo(addSession('index.php'));?>'; return false;" value="Exit">
+<input type="submit" name="doExit" onclick="location='<?php echo(addSession('index'));?>'; return false;" value="Exit">
 <input type="submit" name="doClear" value="Clear Session (will log out out)">
 </form>
 <?php

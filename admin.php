@@ -60,6 +60,6 @@ if ( ! isset($parm['order_by']) ) {
     $parm['desc'] = '1';
 }
 
-Table::pagedAuto($sql, $query_parms, $searchfields, $orderfields, "student.php", $parm, array('Exit' => 'index.php') );
+Table::pagedAuto($sql, $query_parms, $searchfields, $orderfields, "student.php", $parm, array('Exit' => 'index') );
 
 $OUTPUT->footer();

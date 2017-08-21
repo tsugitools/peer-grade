@@ -139,12 +139,12 @@ if ( $assn_json->galleryformat == 'table' ) {
         $newrows[] = $newrow;
     }
     
-    Table::pagedTable($newrows, $searchfields, $orderfields, $view, $parm, array('Exit' => 'index.php'));
+    Table::pagedTable($newrows, $searchfields, $orderfields, $view, $parm, array('Exit' => 'index'));
     $OUTPUT->footer();
     return;
 }
 
-Table::pagedHeader($rows, $searchfields, $orderfields, $view, $parm, array('Exit' => 'index.php'));
+Table::pagedHeader($rows, $searchfields, $orderfields, $view, $parm, array('Exit' => 'index'));
 
 echo '<div id="box">'."\n";
 if (count($rows) == 0 ) {

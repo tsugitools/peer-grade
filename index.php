@@ -15,7 +15,7 @@ $LAUNCH = LTIX::requireData();
 $p = $CFG->dbprefix;
 
 if ( SettingsForm::handleSettingsPost() ) {
-    header( 'Location: '.addSession('index.php') ) ;
+    header( 'Location: '.addSession('index') ) ;
     return;
 }
 
@@ -25,7 +25,7 @@ $dueDate = SettingsForm::getDueDate();
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && count($_POST) < 1 ) {
     $_SESSION['error'] = 'File upload size exceeded, please re-upload a smaller file';
     error_log("Upload size exceeded");
-    header('Location: '.addSession('index.php'));
+    header('Location: '.addSession('index'));
     return;
 }
 
@@ -48,7 +48,7 @@ if ( $assn_id != false && $assn_json != null &&
     isset($_POST['notes']) && isset($_POST['doSubmit']) ) {
     if ( $submit_row !== false ) {
         $_SESSION['error'] = 'Cannot submit an assignment twice';
-        header( 'Location: '.addSession('index.php') ) ;
+        header( 'Location: '.addSession('index') ) ;
         return;
     }
 
@@ -56,7 +56,7 @@ if ( $assn_id != false && $assn_json != null &&
     foreach($_FILES as $fdes) {
         if ( $fdes['size'] > 1024*1024 ) {
             $_SESSION['error'] = 'Error - '.$fdes['name'].' has a size of '.$fdes['size'].' (1M max size per file)';
-            header( 'Location: '.addSession('index.php') ) ;
+            header( 'Location: '.addSession('index') ) ;
             return;
         }
     }
@@ -71,7 +71,7 @@ if ( $assn_id != false && $assn_json != null &&
             $fname = 'uploaded_file_'.$partno;
             if( ! isset($_FILES[$fname]) ) {
                 $_SESSION['error'] = 'Problem with uploaded files - perhaps your files were too large';
-                header( 'Location: '.addSession('index.php') ) ;
+                header( 'Location: '.addSession('index') ) ;
                 return;
             }
 
@@ -81,7 +81,7 @@ if ( $assn_id != false && $assn_json != null &&
             // Check to see if they left off a file
             if( $fdes['error'] == 4) {
                 $_SESSION['error'] = 'Missing file, make sure to select all files before pressing submit';
-                header( 'Location: '.addSession('index.php') ) ;
+                header( 'Location: '.addSession('index') ) ;
                 return;
             }
 
@@ -90,7 +90,7 @@ if ( $assn_id != false && $assn_json != null &&
             if ( $safety !== true ) {
                 $_SESSION['error'] = "Error: ".$safety;
                 error_log("Upload Error: ".$safety);
-                header( 'Location: '.addSession('index.php') ) ;
+                header( 'Location: '.addSession('index') ) ;
                 return;
             }
 
@@ -98,14 +98,14 @@ if ( $assn_id != false && $assn_json != null &&
             if ( ! BlobUtil::isPngOrJpeg($fdes) ) {
                 $_SESSION['error'] = 'Files must either contain JPG, or PNG images: '.$filename;
                 error_log("Upload Error - Not an Image: ".$filename);
-                header( 'Location: '.addSession('index.php') ) ;
+                header( 'Location: '.addSession('index') ) ;
                 return;
             }
 
             $blob_id = BlobUtil::uploadFileToBlob($fdes);
             if ( $blob_id === false ) {
                 $_SESSION['error'] = 'Problem storing file in server: '.$filename;
-                header( 'Location: '.addSession('index.php') ) ;
+                header( 'Location: '.addSession('index') ) ;
                 return;
             }
             $blob_ids[] = $blob_id;
@@ -113,7 +113,7 @@ if ( $assn_id != false && $assn_json != null &&
             $url = $_POST['input_url_'.$partno];
             if ( strpos($url,'http://') === false && strpos($url,'http://') === false ) {
                 $_SESSION['error'] = 'URLs must start with http:// or https:// ';
-                header( 'Location: '.addSession('index.php') ) ;
+                header( 'Location: '.addSession('index') ) ;
                 return;
             }
             $urls[] = $_POST['input_url_'.$partno];
@@ -122,7 +122,7 @@ if ( $assn_id != false && $assn_json != null &&
             $content_data = json_decode($content_item);
             if ( $content_data === null || ! isset($content_data->url)) {
                 $_SESSION['error'] = 'ContentItems must be valid JSON';
-                header( 'Location: '.addSession('index.php') ) ;
+                header( 'Location: '.addSession('index') ) ;
                 return;
             }
             $content_items[] = $content_data;
@@ -130,7 +130,7 @@ if ( $assn_id != false && $assn_json != null &&
             $code = $_POST['input_code_'.$partno];
             if( strlen($code) < 1 ) {
                 $_SESSION['error'] = 'Missing: '.$part->title;
-                header( 'Location: '.addSession('index.php') ) ;
+                header( 'Location: '.addSession('index') ) ;
                 return;
             }
             $PDOX->queryDie("
@@ -168,10 +168,10 @@ if ( $assn_id != false && $assn_json != null &&
     Cache::clear('peer_submit');
     if ( $stmt->success ) {
         $_SESSION['success'] = 'Assignment submitted';
-        header( 'Location: '.addSession('index.php') ) ;
+        header( 'Location: '.addSession('index') ) ;
     } else {
         $_SESSION['error'] = $stmt->errorImplode;
-        header( 'Location: '.addSession('index.php') ) ;
+        header( 'Location: '.addSession('index') ) ;
     }
     return;
 }
@@ -198,7 +198,7 @@ if ( isset($assn_json) && isset($assn_json->resubmit) &&
     $msg = "Deleted submission for user ".$USER->id." ".$USER->email;
     error_log($msg);
     $_SESSION['success'] = "Submission deleted.";
-    header( 'Location: '.addSession('index.php') ) ;
+    header( 'Location: '.addSession('index') ) ;
     return;
 }
 
@@ -230,7 +230,7 @@ if ( $assn_id != false && $assn_json != null && is_array($our_grades) &&
     }
     if ( ! $found ) {
         $_SESSION['error'] = 'Cannot a grade that is not yours';
-        header( 'Location: '.addSession('index.php') ) ;
+        header( 'Location: '.addSession('index') ) ;
         return;
     }
 
@@ -247,7 +247,7 @@ if ( $assn_id != false && $assn_json != null && is_array($our_grades) &&
             ':NOTE' => $_POST['note'])
     );
     $_SESSION['success'] = "Flagged for the instructor to examine";
-    header( 'Location: '.addSession('index.php') ) ;
+    header( 'Location: '.addSession('index') ) ;
     return;
 }
 
@@ -270,16 +270,16 @@ $OUTPUT->welcomeUserCourse();
 
 
 if ( $USER->instructor ) {
-    echo('<p><a href="configure.php" class="btn btn-default">Configure this Assignment</a> ');
+    echo('<p><a href="configure" class="btn btn-default">Configure this Assignment</a> ');
     SettingsForm::button();
-    echo('<a href="analytics.php" class="btn btn-default">Analytics</a> ');
+    echo('<a href="analytics" class="btn btn-default">Analytics</a> ');
     if ( $assn_json !== null ) {
-        echo('<a href="admin.php" class="btn btn-default">Explore Student Data</a> ');
+        echo('<a href="admin" class="btn btn-default">Explore Student Data</a> ');
     }
     if ( $assn_json != null && $assn_json->totalpoints > 0 ) {
-        echo('<a href="maint.php" target="_new" class="btn btn-default">Grade Maintenance</a> ');
+        echo('<a href="maint" target="_new" class="btn btn-default">Grade Maintenance</a> ');
     }
-    echo('<a href="debug.php" class="btn btn-default">Session Dump</a></p>');
+    echo('<a href="debug" class="btn btn-default">Session Dump</a></p>');
 }
 
 if ( $assn_json != null ) {
@@ -315,7 +315,7 @@ if ( $submit_row == false ) {
     }
     echo("<p><b>Please Upload Your Submission:</b></p>\n");
     echo('<form name="myform" enctype="multipart/form-data" method="post" action="'.
-         addSession('index.php').'">');
+         addSession('index').'">');
 
     $partno = 0;
     $content_items = array();
@@ -410,9 +410,9 @@ if ( $assn_json->maxassess > 0 ) {
         ($assn_json->peerpoints > 0 || $assn_json->rating > 0 ) &&
         ($USER->instructor || $grade_count < $assn_json->maxassess ) ) {
         if ( $assn_json->rating > 0 ) {
-            echo('<p><a href="grade.php" class="btn btn-default">Rate other students</a></p>'."\n");
+            echo('<p><a href="grade" class="btn btn-default">Rate other students</a></p>'."\n");
         } else {
-            echo('<p><a href="grade.php" class="btn btn-default">Review other students</a></p>'."\n");
+            echo('<p><a href="grade" class="btn btn-default">Review other students</a></p>'."\n");
         }
 
         // Add a done button if needed

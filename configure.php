@@ -18,27 +18,27 @@ if ( isset($_POST['json']) ) {
     $json = json_decode(upgradeSubmission($json));
     if ( $json === null ) {
         $_SESSION['error'] = "Bad JSON Syntax";
-        header( 'Location: '.addSession('configure.php') ) ;
+        header( 'Location: '.addSession('configure') ) ;
         return;
     }
 
     // Some sanity checking...
     if ( $json->totalpoints < 0 ) {
         $_SESSION['error'] = "totalpoints is required and must be >= 0";
-        header( 'Location: '.addSession('configure.php') ) ;
+        header( 'Location: '.addSession('configure') ) ;
         return;
     }
 
     if ( $json->rating > 0 and $json->peerpoints > 0 ) {
         $_SESSION['error'] = "You can include peerpoints or rating range but not both.";
-        header( 'Location: '.addSession('configure.php') ) ;
+        header( 'Location: '.addSession('configure') ) ;
         return;
     }
 
     if ( ( $json->instructorpoints + $json->peerpoints + 
         ($json->assesspoints*$json->minassess) ) != $json->totalpoints ) {
         $_SESSION['error'] = "instructorpoints + peerpoints + (assesspoints*minassess) != totalpoints ";
-        header( 'Location: '.addSession('configure.php') ) ;
+        header( 'Location: '.addSession('configure') ) ;
         return;
     }
 
@@ -55,10 +55,10 @@ if ( isset($_POST['json']) ) {
     Cache::clear("peer_assn");
     if ( $stmt->success ) {
         $_SESSION['success'] = 'Assignment updated';
-        header( 'Location: '.addSession('index.php') ) ;
+        header( 'Location: '.addSession('index') ) ;
     } else {
         $_SESSION['error'] = $stmt->errorImplode;
-        header( 'Location: '.addSession('configure.php') ) ;
+        header( 'Location: '.addSession('configure') ) ;
     }
     return;
 }
@@ -95,7 +95,7 @@ and the kinds of changes that are safe to make after the assignment starts.
 </textarea>
 <p>
 <input type="submit" value="Save">
-<input type=submit name=doCancel onclick="location='<?php echo(addSession('index.php'));?>'; return false;" value="Cancel"></p>
+<input type=submit name=doCancel onclick="location='<?php echo(addSession('index'));?>'; return false;" value="Cancel"></p>
 </form>
 <p><b>Configuration:</b></p>
 <p>This tool can create a range of structured drop boxes using the values below.  

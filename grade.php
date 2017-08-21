@@ -14,13 +14,13 @@ $LAUNCH = LTIX::requireData();
 $p = $CFG->dbprefix;
 
 $user_id = false;
-$url_goback = 'index.php';
-$url_stay = 'grade.php';
+$url_goback = 'index';
+$url_stay = 'grade';
 if ( isset($_GET['user_id']) ) {
     if ( ! $USER->instructor ) die("Only instructors can grade specific students'");
     $user_id = $_GET['user_id'];
     $url_goback = 'student.php?user_id='.$user_id;
-    $url_stay = 'grade.php?user_id='.$user_id;
+    $url_stay = 'grade?user_id='.$user_id;
 }
 
 // Model
