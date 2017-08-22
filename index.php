@@ -4,6 +4,7 @@ use \Tsugi\Blob\BlobUtil;
 
 require_once "peer_util.php";
 
+use \Tsugi\Util\U;
 use \Tsugi\Core\Cache;
 use \Tsugi\Core\Settings;
 use \Tsugi\Core\LTIX;
@@ -254,7 +255,7 @@ if ( $assn_id != false && $assn_json != null && is_array($our_grades) &&
 // View
 $OUTPUT->header();
 ?>
-<link href="<?php echo($OUTPUT::getLocalStatic(__FILE__)); ?>/static/prism.css" rel="stylesheet"/>
+<link href="<?= U::get_rest_parent() ?>/static/prism.css" rel="stylesheet"/>
 <?php
 $OUTPUT->bodyStart();
 $OUTPUT->topNav();
@@ -541,7 +542,7 @@ $(document).ready(function() {
 
 <?php } ?>
  
-<script src="<?php echo($OUTPUT::getLocalStatic(__FILE__)); ?>/static/prism.js" type="text/javascript"></script>
+<script src="<?= U::get_rest_parent() ?>/static/prism.js" type="text/javascript"></script>
 <?php
 $OUTPUT->footerEnd();
 

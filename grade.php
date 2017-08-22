@@ -4,6 +4,7 @@ use \Tsugi\Blob\BlobUtil;
 
 require_once "peer_util.php";
 
+use \Tsugi\Util\U;
 use \Tsugi\Core\Cache;
 use \Tsugi\Core\LTIX;
 use \Tsugi\Core\Result;
@@ -169,7 +170,7 @@ if ( $submit_json === null ) {
 // View
 $OUTPUT->header();
 ?>
-<link href="<?php echo($OUTPUT::getLocalStatic(__FILE__)); ?>/static/prism.css" rel="stylesheet"/>
+<link href="<?= U::get_rest_parent() ?>/static/prism.css" rel="stylesheet"/>
 <?php
 $OUTPUT->bodyStart();
 $OUTPUT->topNav();
@@ -222,7 +223,7 @@ $_SESSION['peer_submit_id'] = $submit_id;  // Our CSRF touch
 
 $OUTPUT->footerStart();
 ?>
-<script src="<?php echo($OUTPUT::getLocalStatic(__FILE__)); ?>/static/prism.js" type="text/javascript"></script>
+<script src="<?= U::get_rest_parent() ?>/static/prism.js" type="text/javascript"></script>
 </script>
 <?php
 $OUTPUT->footerEnd();
