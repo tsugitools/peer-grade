@@ -272,7 +272,9 @@ $OUTPUT->welcomeUserCourse();
 if ( $USER->instructor ) {
     echo('<p><a href="configure" class="btn btn-default">Configure this Assignment</a> ');
     SettingsForm::button();
-    echo('<a href="analytics" class="btn btn-default">Analytics</a> ');
+    if ( $CFG->launchactivity ) {
+        echo('<a href="analytics" class="btn btn-default">Analytics</a> ');
+    }
     if ( $assn_json !== null ) {
         echo('<a href="admin" class="btn btn-default">Explore Student Data</a> ');
     }
