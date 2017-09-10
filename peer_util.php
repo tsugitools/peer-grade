@@ -112,6 +112,7 @@ function upgradeSubmission($json_str)
     if ( ! isset($json->gallery) ) $json->gallery = "off";
     if ( ! isset($json->galleryformat) ) $json->galleryformat = "card";
     if ( ! isset($json->resubmit) ) $json->resubmit = "off";
+    if ( ! isset($json->autopeer) ) $json->autopeer = false;
     if ( ! isset($json->notepublic) ) $json->notepublic = "false";
     return json_encode($json);
 }
@@ -265,7 +266,8 @@ function computeGrade($assn_id, $assn_json, $user_id)
 
     if ( $assn_json->totalpoints == 0 ) return 0;
     $stmt = $PDOX->queryDie(
-        "SELECT S.assn_id, S.user_id AS user_id, inst_points, email, displayname, S.submit_id as submit_id,
+        "SELECT S.assn_id, S.user_id AS user_id, inst_points, email, displayname,
+             S.submit_id as submit_id, S.created_at AS created_at,
             MAX(points) as max_points, COUNT(points) as count_points, C.grade_count as grade_count
         FROM {$CFG->dbprefix}peer_submit as S
         JOIN {$CFG->dbprefix}peer_grade AS G
@@ -290,6 +292,15 @@ function computeGrade($assn_id, $assn_json, $user_id)
     // Compute the overall points
     $inst_points = $row['inst_points'] + 0;
     $assnpoints = $row['max_points']+0;
+
+    // Handle when the student has waited "long enough" for a peer-grade
+    $created_at = strtotime($row['created_at']);
+    $diff = $created_at - time();
+    if ( isset($assn_json->autopeer) && $assn_json->autopeer > 0 &&
+        $diff > $assn_json->autopeer && $assnpoints < $assn_json->peerpoints) {
+        $assnpoints = $assn_json->peerpoints;
+    }
+
     if ( $assnpoints < 0 ) $assnpoints = 0;
     if ( $assnpoints > $assn_json->peerpoints ) $assnpoints = $assn_json->peerpoints;
 
