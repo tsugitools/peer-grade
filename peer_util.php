@@ -294,10 +294,12 @@ function computeGrade($assn_id, $assn_json, $user_id)
     $assnpoints = $row['max_points']+0;
 
     // Handle when the student has waited "long enough" for a peer-grade
-    $created_at = strtotime($row['created_at']);
-    $diff = $created_at - time();
+    $created_at = strtotime($row['created_at']." UTC");
+    $diff = time() - $created_at;
     if ( isset($assn_json->autopeer) && $assn_json->autopeer > 0 &&
         $diff > $assn_json->autopeer && $assnpoints < $assn_json->peerpoints) {
+	// TODO: Turn this into an event
+        error_log('Auto-peer '.time().' '.$diff.' '.$row['displayname']);
         $assnpoints = $assn_json->peerpoints;
     }
 
