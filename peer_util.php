@@ -280,6 +280,7 @@ function computeGrade($assn_id, $assn_json, $user_id)
             JOIN {$CFG->dbprefix}peer_grade AS G
                 ON S.submit_id = G.submit_id
             WHERE S.assn_id = :AID AND G.user_id = :UID
+            GROUP BY user_id
             ) AS C
             ON U.user_id = C.user_id
         WHERE S.assn_id = :AID AND S.user_id = :UID",
