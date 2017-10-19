@@ -21,12 +21,12 @@ array( "{$CFG->dbprefix}peer_assn",
 "create table {$CFG->dbprefix}peer_assn (
     assn_id    INTEGER NOT NULL KEY AUTO_INCREMENT,
     link_id    INTEGER NOT NULL,
-    due_at     DATETIME NOT NULL,
+    due_at     TIMESTAMP NULL,
 
-    json         TEXT NULL,
+    json       TEXT NULL,
 
-    updated_at  DATETIME NOT NULL,
-    created_at  DATETIME NOT NULL,
+    updated_at  TIMESTAMP NULL,
+    created_at  TIMESTAMP NOT NULL,
 
     CONSTRAINT `{$CFG->dbprefix}peer_assn_ibfk_1`
         FOREIGN KEY (`link_id`)
@@ -54,8 +54,8 @@ array( "{$CFG->dbprefix}peer_submit",
 
     rating     INTEGER NULL,  -- Aggregate rating
 
-    updated_at DATETIME NOT NULL,
-    created_at DATETIME NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL,
 
     CONSTRAINT `{$CFG->dbprefix}peer_submit_ibfk_1`
         FOREIGN KEY (`user_id`)
@@ -79,8 +79,8 @@ array( "{$CFG->dbprefix}peer_text",
     data         TEXT NULL,
     json         TEXT NULL,
 
-    updated_at  DATETIME NOT NULL,
-    created_at  DATETIME NOT NULL,
+    updated_at  TIMESTAMP NOT NULL,
+    created_at  TIMESTAMP NOT NULL,
 
     CONSTRAINT `{$CFG->dbprefix}peer_text_ibfk_1`
         FOREIGN KEY (`assn_id`)
@@ -106,8 +106,8 @@ array( "{$CFG->dbprefix}peer_grade",
 
     json         TEXT NULL,
 
-    updated_at  DATETIME NOT NULL,
-    created_at  DATETIME NOT NULL,
+    updated_at  TIMESTAMP NOT NULL,
+    created_at  TIMESTAMP NOT NULL,
 
     CONSTRAINT `{$CFG->dbprefix}peer_grade_ibfk_1`
         FOREIGN KEY (`submit_id`)
@@ -131,8 +131,8 @@ array( "{$CFG->dbprefix}peer_flag",
 
     json         TEXT NULL,
 
-    updated_at  DATETIME NOT NULL,
-    created_at  DATETIME NOT NULL,
+    updated_at  TIMESTAMP NOT NULL,
+    created_at  TIMESTAMP NOT NULL,
 
     CONSTRAINT `{$CFG->dbprefix}peer_flag_ibfk_1`
         FOREIGN KEY (`submit_id`)
@@ -185,7 +185,41 @@ $DATABASE_UPGRADE = function($oldversion) {
         $q = $PDOX->queryDie($sql);
     }
 
-    return 201602211200;
+    // Support for ratings 
+    if ( $oldversion < 201710191330 ) {
+        $sql= "UPDATE {$CFG->dbprefix}peer_assn SET due_at='1970-01-02 00:00:00' WHERE due_at < '1970-01-02 00:00:00'";
+        echo("Upgrading: ".$sql."<br/>\n");
+        error_log("Upgrading: ".$sql);
+        $q = $PDOX->queryDie($sql);
+        $tables = array(
+            'peer_flag', 'peer_grade', 'peer_submit', 'peer_assn', 'lti_link');
+        foreach($tables as $table) {
+            $sql= "UPDATE {$CFG->dbprefix}{$table} SET updated_at='1970-01-02 00:00:00' WHERE updated_at < '1970-01-02 00:00:00'";
+            echo("Upgrading: ".$sql."<br/>\n");
+            error_log("Upgrading: ".$sql);
+            $q = $PDOX->queryDie($sql);
+
+            $sql= "ALTER TABLE {$CFG->dbprefix}{$table} MODIFY updated_at TIMESTAMP NULL DEFAULT '1970-01-02 00:00:00'";
+            echo("Upgrading: ".$sql."<br/>\n");
+            error_log("Upgrading: ".$sql);
+            $q = $PDOX->queryDie($sql);
+
+            $sql= "ALTER TABLE {$CFG->dbprefix}{$table} MODIFY created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP";
+            echo("Upgrading: ".$sql."<br/>\n");
+            error_log("Upgrading: ".$sql);
+            $q = $PDOX->queryDie($sql);
+	}
+
+
+        $sql= "ALTER TABLE {$CFG->dbprefix}peer_assn MODIFY due_at TIMESTAMP NULL DEFAULT '1970-01-02 00:00:00'";
+        echo("Upgrading: ".$sql."<br/>\n");
+        error_log("Upgrading: ".$sql);
+        $q = $PDOX->queryDie($sql);
+
+    }
+
+
+    return 201710191330;
 }; // Don't forget the semicolon on anonymous functions :)
 
 // Do the actual migration if we are not in admin/upgrade.php
