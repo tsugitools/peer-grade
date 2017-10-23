@@ -265,8 +265,7 @@ function computeGrade($assn_id, $assn_json, $user_id)
     global $CFG, $PDOX;
 
     if ( $assn_json->totalpoints == 0 ) return 0;
-    $stmt = $PDOX->queryDie(
-        "SELECT S.assn_id, S.user_id AS user_id, inst_points, email, displayname,
+        $sql = "SELECT S.assn_id, S.user_id AS user_id, inst_points, email, displayname,
              S.submit_id as submit_id, S.created_at AS created_at,
             MAX(points) as max_points, COUNT(points) as count_points, C.grade_count as grade_count
         FROM {$CFG->dbprefix}peer_submit as S
@@ -275,15 +274,15 @@ function computeGrade($assn_id, $assn_json, $user_id)
         JOIN {$CFG->dbprefix}lti_user AS U
             ON S.user_id = U.user_id
         LEFT JOIN (
-            SELECT G.user_id AS user_id, count(G.user_id) as grade_count
+            SELECT count(G.user_id) as grade_count
             FROM {$CFG->dbprefix}peer_submit as S
             JOIN {$CFG->dbprefix}peer_grade AS G
                 ON S.submit_id = G.submit_id
             WHERE S.assn_id = :AID AND G.user_id = :UID
-            GROUP BY user_id
             ) AS C
-            ON U.user_id = C.user_id
-        WHERE S.assn_id = :AID AND S.user_id = :UID",
+            ON U.user_id = :UID
+        WHERE S.assn_id = :AID AND S.user_id = :UID";
+    $stmt = $PDOX->queryDie($sql,
         array(":AID" => $assn_id, ":UID" => $user_id)
     );
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
