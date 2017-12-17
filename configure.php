@@ -285,7 +285,7 @@ Student Initiated Resubmit
     <p>
       <span data-toggle="tooltip" title="
 A number of minutes after which if a submission has not received any peer 'grades', we automatically assign a peer grade. 
-Leave this value zero ao disable this feature.
+Leave this value zero to disable this feature.
 The value is in seconds so a week is 7*24*60*60 or 604800. 
 The student needs to view their submission or a batch process has to run to trigger this processing.
 ">
@@ -339,10 +339,11 @@ Show Note field in Gallery
 <input type=submit name=doCancel onclick="location='<?php echo(addSession('index.php'));?>'; return false;" value="Cancel"></p>
 </form>
 
-<pre>
+<pre id="debug_pre" style="display:none">
 Previous JSON:
 <?= $json ?>
 </pre>
+<a href="#" onclick="$('#debug_pre').toggle(); return false;">Toggle Debug Data</a>
 
 <?php
 
@@ -394,8 +395,8 @@ function add_part(part) {
     if ( part.title ) $('#part_title_'+counter).val(part.title);
     if ( part.type ) {
         $('#part_type_'+counter).val(part.type);
-        if ( part.type == 'code' && part.code ) {
-            $('#part_code_'+counter).val(part.code);
+        if ( part.type == 'code' && part.language ) {
+            $('#part_code_'+counter).val(part.language);
             $('#part_code_'+counter).show();
         }
     }
@@ -439,7 +440,7 @@ function update_part_form(partno) {
 <script id="part-template" type="text">
 <li id="part_@PART@">
 <p>
-<input type="text" name="part_title_@PART@" id="part_title_@PART@"
+<input type="text" style="width:70%" name="part_title_@PART@" id="part_title_@PART@"
 placeholder=" .. Title (Required) .." required>
 <span data-toggle="tooltip" title="Please enter the title of the deliverable.">
 <i class="fa fa-asterisk"></i>
