@@ -112,7 +112,8 @@ function upgradeSubmission($json_str)
     if ( ! isset($json->gallery) ) $json->gallery = "off";
     if ( ! isset($json->galleryformat) ) $json->galleryformat = "card";
     if ( ! isset($json->resubmit) ) $json->resubmit = "off";
-    if ( ! isset($json->autopeer) ) $json->autopeer = false;
+    if ( ! isset($json->autopeer) ) $json->autopeer = 0;
+    if ( $json->autopeer === false ) $json->autopeer = 0;
     if ( ! isset($json->notepublic) ) $json->notepublic = "false";
     return json_encode($json);
 }
