@@ -185,8 +185,11 @@ $DATABASE_UPGRADE = function($oldversion) {
         $q = $PDOX->queryDie($sql);
     }
 
-    // Support for ratings 
-    if ( $oldversion < 201710191330 ) {
+    // Clean up the date fields a few times...
+    // OK to run these more than once..
+    $current_date = \Tsugi\Util\U::conversion_time();
+    if ( $current_date < 201803010000 ) {
+        echo("Double checking that dates are correct for the peer grader...<br/>\n");
         $sql= "UPDATE {$CFG->dbprefix}peer_assn SET due_at='1970-01-02 00:00:00' WHERE due_at < '1970-01-02 00:00:00'";
         echo("Upgrading: ".$sql."<br/>\n");
         error_log("Upgrading: ".$sql);
