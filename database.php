@@ -228,6 +228,5 @@ $DATABASE_UPGRADE = function($oldversion) {
 // Do the actual migration if we are not in admin/upgrade.php
 if ( isset($CURRENT_FILE) ) {
     include $CFG->dirroot."/admin/migrate-run.php";
-    $OUTPUT->footer();
 }
 
