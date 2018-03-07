@@ -26,7 +26,7 @@ array( "{$CFG->dbprefix}peer_assn",
     json       TEXT NULL,
 
     updated_at  TIMESTAMP NULL,
-    created_at  TIMESTAMP NOT NULL,
+    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT `{$CFG->dbprefix}peer_assn_ibfk_1`
         FOREIGN KEY (`link_id`)
@@ -54,8 +54,8 @@ array( "{$CFG->dbprefix}peer_submit",
 
     rating     INTEGER NULL,  -- Aggregate rating
 
-    updated_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT `{$CFG->dbprefix}peer_submit_ibfk_1`
         FOREIGN KEY (`user_id`)
@@ -79,8 +79,8 @@ array( "{$CFG->dbprefix}peer_text",
     data         TEXT NULL,
     json         TEXT NULL,
 
-    updated_at  TIMESTAMP NOT NULL,
-    created_at  TIMESTAMP NOT NULL,
+    updated_at  TIMESTAMP NULL,
+    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT `{$CFG->dbprefix}peer_text_ibfk_1`
         FOREIGN KEY (`assn_id`)
@@ -106,8 +106,8 @@ array( "{$CFG->dbprefix}peer_grade",
 
     json         TEXT NULL,
 
-    updated_at  TIMESTAMP NOT NULL,
-    created_at  TIMESTAMP NOT NULL,
+    updated_at  TIMESTAMP NULL,
+    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT `{$CFG->dbprefix}peer_grade_ibfk_1`
         FOREIGN KEY (`submit_id`)
@@ -131,8 +131,8 @@ array( "{$CFG->dbprefix}peer_flag",
 
     json         TEXT NULL,
 
-    updated_at  TIMESTAMP NOT NULL,
-    created_at  TIMESTAMP NOT NULL,
+    updated_at  TIMESTAMP NULL,
+    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT `{$CFG->dbprefix}peer_flag_ibfk_1`
         FOREIGN KEY (`submit_id`)
