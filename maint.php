@@ -38,6 +38,19 @@ if ( isset($_POST['restartReGrade']) ) {
     return;
 }
 
+if ( isset($_POST['catchupInstructor']) ) {
+    $lstmt = $PDOX->queryDie(
+        "UPDATE {$p}peer_submit SET inst_points=:IP
+        WHERE assn_id = :AID",
+        array(":IP" => $assn_json->instructorpoints, ":AID" => $assn_id)
+    );
+
+    $msg = $lstmt->rowcount() . " Records changed.";
+    $_SESSION["success"] = $msg;
+    header("Location: ".addSession('maint.php'));
+    return;
+}
+
 if ( isset($_POST['reGradePeer']) ) {
     $OUTPUT->header();
     echo($OUTPUT->togglePreScript());
@@ -138,6 +151,9 @@ $iframeurl = addSession($CFG->getCurrentUrl().'?link_id=' . $link_id);
 
 <div>
 <form style="display: inline" method="post">
+  <button name="catchupInstructor" class="btn btn-warning">Catch Up Instructor Points</button>
+</form>
+<form style="display: inline" method="post">
   <button name="restartReGrade" class="btn btn-warning">Restart Re-Grade</button>
 </form>
 <form style="display: inline" method="post" target="my_iframe" action="<?php echo($iframeurl); ?>">
@@ -146,6 +162,11 @@ $iframeurl = addSession($CFG->getCurrentUrl().'?link_id=' . $link_id);
 </form>
 <p>These are maintenance tools make sure you know how to use them.
 <ul>
+<li><b>Catch Up Instructor Points</b> If the instructor points have changed (currently
+<?= $assn_json->instructorpoints ?>) you can set all of the submissions to have the new
+instructor point value.   This allows you to catch up with instructor grading if
+you turn it on after submissions are already in progress.
+</li>
 <li><b>Re-Compute Peer Grades</b> Loops through all peer-graded submissions
 and re-computes the effective grade, checking to see if the local grade
 is correct.  If there is a mis-match, the local grade is updated
@@ -200,5 +221,5 @@ function updateNumbers() {
 }
 updateNumbers();
 </script>
-<?
+<?php
 $OUTPUT->footerEnd();
