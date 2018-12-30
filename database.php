@@ -127,7 +127,7 @@ array( "{$CFG->dbprefix}peer_flag",
     note         TEXT NULL,
     response     TEXT NULL,
     handled      BOOLEAN NOT NULL DEFAULT FALSE,
-    respond_id   INTEGER NOT NULL,  -- The responder's user_id
+    respond_id   INTEGER NULL,  -- The responder's user_id
 
     json         TEXT NULL,
 
@@ -221,8 +221,14 @@ $DATABASE_UPGRADE = function($oldversion) {
 
     }
 
+    if ( $oldversion < 201812291121 ) {
+        $sql= "ALTER TABLE {$CFG->dbprefix}peer_flag MODIFY respond_id INTEGER NULL";
+        echo("Upgrading: ".$sql."<br/>\n");
+        error_log("Upgrading: ".$sql);
+        $q = $PDOX->queryDie($sql);
+    }
 
-    return 201710191330;
+    return 201812291121;
 }; // Don't forget the semicolon on anonymous functions :)
 
 // Do the actual migration if we are not in admin/upgrade.php
