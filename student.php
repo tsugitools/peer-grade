@@ -244,6 +244,7 @@ if ( isset($_POST['flag_id']) && isset($_POST['deleteFlag']) ) {
 
 // Retrieve the grades that we have given
 $grades_given = retrieveGradesGiven($assn_id, $user_id);
+$peer_marks = retrievePeerMarks($assn_id, $user_id);
 
 // Retrieve the next and previous users for paging
 $sql = "(SELECT user_id, inst_points FROM ${p}peer_submit 
@@ -468,7 +469,11 @@ if ( $grades_received === false || count($grades_received) < 1 ) {
 }
 
 if ( $grades_given === false || count($grades_given) < 1 ) {
-    echo("<p>Nothing has been graded $user_display yet.</p>");
+    if ( $peer_marks > 0 ) {
+        echo("<p>$peer_marks peer_marks given $user_display.</p>");
+    } else {
+        echo("<p>Nothing has been graded $user_display yet.</p>");
+    }
 } else {
     echo("<p>Grades Given$user_display:</p>");
     echo('<div style="margin:3px;">');

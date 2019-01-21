@@ -121,6 +121,18 @@ if ( isset($_POST['points']) && isset($_POST['submit_id'])
         return;
     }
 
+    // Add this to student doing the grading peer_marks count
+    // in case a submission is later deleted
+    $stmt = $PDOX->queryReturnError(
+        "UPDATE {$p}peer_submit
+            SET peer_marks = peer_marks + 1
+            WHERE assn_id = :AID AND user_id = :UID",
+        array(
+            ':AID' => $assn_id,
+            ':UID' => $USER->id
+        )
+    );
+
     // Attempt to update the user's grade, may take a second..
     $grade = computeGrade($assn_id, $assn_json, $user_id);
     $_SESSION['success'] = 'Grade submitted';

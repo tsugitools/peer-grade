@@ -3,6 +3,7 @@
 use \Tsugi\Core\Cache;
 use \Tsugi\UI\Output;
 use \Tsugi\Util\LTI;
+use \Tsugi\Util\U;
 use \Tsugi\Core\LTIX;
 use \Tsugi\Core\User;
 use \Tsugi\Core\Mail;
@@ -300,6 +301,8 @@ function computeGrade($assn_id, $assn_json, $user_id)
     if ( $assnpoints < 0 ) $assnpoints = 0;
     if ( $assnpoints > $assn_json->peerpoints ) $assnpoints = $assn_json->peerpoints;
 
+    $peer_marks = retrievePeerMarks($assn_id, $user_id);
+
     $sql = "SELECT count(G.user_id) as grade_count
         FROM {$CFG->dbprefix}peer_submit as S
         JOIN {$CFG->dbprefix}peer_grade AS G
@@ -313,6 +316,7 @@ function computeGrade($assn_id, $assn_json, $user_id)
 
     $gradecount = 0;
     if ( $row ) $gradecount = $row['grade_count']+0;
+    if ( $peer_marks > $gradecount ) $gradecount = $peer_marks;
     if ( $gradecount < 0 ) $gradecount = 0;
     if ( $gradecount > $assn_json->minassess ) $gradecount = $assn_json->minassess;
     $gradepoints = $gradecount * $assn_json->assesspoints;
@@ -328,6 +332,9 @@ function loadMyGradeCount($assn_id) {
     $cachekey = $assn_id . "::" . $USER->id;
     $grade_count = Cache::check($cacheloc, $cachekey);
     if ( $grade_count != false ) return $grade_count;
+
+    $peer_marks = retrievePeerMarks($assn_id, $USER->id);
+
     $stmt = $PDOX->queryDie(
         "SELECT COUNT(grade_id) AS grade_count
         FROM {$CFG->dbprefix}peer_submit AS S
@@ -337,9 +344,13 @@ function loadMyGradeCount($assn_id) {
         array( ':AID' => $assn_id, ':UID' => $USER->id)
     );
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
     if ( $row !== false ) {
-        $grade_count = $row['grade_count']+0;
+        $grade_count = U::get($row, 'grade_count', '0') + 0;
+    } else {
+        $grade_count = $peer_marks;
     }
+    if ( $peer_marks > $grade_count ) $grade_count = $peer_marks;
     Cache::set($cacheloc, $cachekey, $grade_count);
     return $grade_count;
 }
@@ -361,6 +372,23 @@ function retrieveSubmissionGrades($submit_id)
         array( ':SID' => $submit_id)
     );
     return $grades_received;
+}
+
+// Check the peer_marks in case entries have been deleted
+function retrievePeerMarks($assn_id, $user_id) {
+    global $CFG, $PDOX;
+    $sql = "SELECT peer_marks FROM {$CFG->dbprefix}peer_submit
+        WHERE assn_id = :AID AND user_id = :UID";
+
+    // TODO: Make queryDie after we are sure the model is upgraded
+    $stmt = $PDOX->queryReturnError($sql,
+    // $stmt = $PDOX->queryDie($sql,
+        array(":AID" => $assn_id, ":UID" => $user_id)
+    );
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $peer_marks = U::get($row, 'peer_marks', '0') + 0;
+    return $peer_marks;
 }
 
 function retrieveGradesGiven($assn_id, $user_id)
