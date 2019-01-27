@@ -112,7 +112,7 @@ if ( $assn_id != false && $assn_json != null &&
             $blob_ids[] = $blob_id;
         } else if ( $part->type == 'url' ) {
             $url = $_POST['input_url_'.$partno];
-            if ( strpos($url,'http://') === false && strpos($url,'http://') === false ) {
+            if ( strpos($url,'http://') === false && strpos($url,'https://') === false ) {
                 $_SESSION['error'] = 'URLs must start with http:// or https:// ';
                 header( 'Location: '.addSession('index') ) ;
                 return;
