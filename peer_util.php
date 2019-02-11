@@ -428,7 +428,7 @@ function mailDeleteSubmit($user_id, $assn_json, $note)
     $message = "This is an automated message.  Your peer-graded entry has been reset.$E$E";
     if ( isset($CONTEXT->title) ) $message .= 'Course Title: '.$CONTEXT->title.$E;
     if ( isset($LINK->title) ) $message .= 'Assignment: '.$LINK->title.$E;
-    if ( isset($USER->displayname) ) $message .= 'Staff member doing reset: '.$USER->displayname.$E;
+    // if ( isset($USER->displayname) ) $message .= 'Staff member doing reset: '.$USER->displayname.$E;
 
     $fixnote = trim($note);
     if ( strlen($fixnote) > 0 ) {
