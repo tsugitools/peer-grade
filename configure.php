@@ -149,7 +149,14 @@ $OUTPUT->header();
 }
 </style>
 <?php
+
+$menu = new \Tsugi\UI\MenuSet();
+if ( $USER->instructor ) {
+   $menu->addLeft('Cancel', 'index.php');
+}
+
 $OUTPUT->bodyStart();
+$OUTPUT->topNav($menu);
 $OUTPUT->flashMessages();
 if ( ! $USER->instructor ) die("Requires instructor role");
 

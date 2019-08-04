@@ -143,7 +143,6 @@ function showFrame() {
 </script>
 <?php
 $OUTPUT->bodyStart();
-$OUTPUT->topNav();
 $OUTPUT->flashMessages();
 
 $iframeurl = addSession($CFG->getCurrentUrl().'?link_id=' . $link_id);
@@ -158,7 +157,7 @@ $iframeurl = addSession($CFG->getCurrentUrl().'?link_id=' . $link_id);
 </form>
 <form style="display: inline" method="post" target="my_iframe" action="<?php echo($iframeurl); ?>">
   <button name="reGradePeer" onclick="showFrame();" class="btn btn-warning">Re-Compute Peer Grades</button>
-  <button onclick="window.close();return false;" class="btn btn-primary">Exit</button>
+<a href="index.php" class="btn btn-default">Exit<a/>
 </form>
 <p>These are maintenance tools make sure you know how to use them.
 <ul>

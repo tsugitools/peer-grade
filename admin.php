@@ -46,10 +46,15 @@ $sql =
     WHERE A.link_id = :LID
     GROUP BY S.submit_id";
 
+$menu = new \Tsugi\UI\MenuSet();
+if ( $USER->instructor ) {
+   $menu->addLeft('Done', 'index.php');
+}
+
 // View
 $OUTPUT->header();
 $OUTPUT->bodyStart();
-$OUTPUT->topNav();
+$OUTPUT->topNav($menu);
 $OUTPUT->flashMessages();
 $OUTPUT->welcomeUserCourse();
 
@@ -60,6 +65,6 @@ if ( ! isset($parm['order_by']) ) {
     $parm['desc'] = '1';
 }
 
-Table::pagedAuto($sql, $query_parms, $searchfields, $orderfields, "student.php", $parm, array('Exit' => 'index') );
+Table::pagedAuto($sql, $query_parms, $searchfields, $orderfields, "student.php", $parm );
 
 $OUTPUT->footer();

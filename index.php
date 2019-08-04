@@ -252,14 +252,35 @@ if ( $assn_id != false && $assn_json != null && is_array($our_grades) &&
     return;
 }
 
+$menu = new \Tsugi\UI\MenuSet();
+
+if ( $USER->instructor ) {
+    if ( $assn_json !== null ) {
+        $menu->addLeft('Student Data', 'admin');
+    }
+    $submenu = new \Tsugi\UI\Menu();
+    $submenu->addLink('Settings', '#', /* push */ false, SettingsForm::attr());
+    $submenu->addLink('Configure', 'configure');
+    if ( $CFG->launchactivity ) {
+        $submenu->addLink('Analytics', 'analytics');
+    }
+    if ( $assn_json != null && $assn_json->totalpoints > 0 ) {
+        $submenu->addLink('Maintenance', 'maint', 'target="_blank"');
+    }
+    $submenu->addLink('Debug Data', 'debug');
+    $menu->addRight('Instructor', $submenu);
+}
+
 // View
 $OUTPUT->header();
 ?>
 <link href="<?= U::get_rest_parent() ?>/static/prism.css" rel="stylesheet"/>
 <?php
+
 $OUTPUT->bodyStart();
-$OUTPUT->topNav();
+$OUTPUT->topNav($menu);
 $OUTPUT->flashMessages();
+
 if ( $USER->instructor ) {
     SettingsForm::start();
     SettingsForm::dueDate();
@@ -268,22 +289,6 @@ if ( $USER->instructor ) {
 } 
 
 $OUTPUT->welcomeUserCourse();
-
-
-if ( $USER->instructor ) {
-    echo('<p><a href="configure" class="btn btn-default">Configure this Assignment</a> ');
-    SettingsForm::button();
-    if ( $CFG->launchactivity ) {
-        echo('<a href="analytics" class="btn btn-default">Analytics</a> ');
-    }
-    if ( $assn_json !== null ) {
-        echo('<a href="admin" class="btn btn-default">Explore Student Data</a> ');
-    }
-    if ( $assn_json != null && $assn_json->totalpoints > 0 ) {
-        echo('<a href="maint" target="_new" class="btn btn-default">Grade Maintenance</a> ');
-    }
-    echo('<a href="debug" class="btn btn-default">Session Dump</a></p>');
-}
 
 if ( $assn_json != null ) {
     echo('<div style="border: 1px solid black">');
