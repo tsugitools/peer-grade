@@ -99,7 +99,7 @@ to this screen for further instructions.
 <?php } else { ?>
 <p>
 If you cannot grade images from other students because you use a screen reader or other assistive device,
-check the box below and we will
+check the box below and we will exempt you from doing peer grading for this assignment.
 <form method="post">
 <input type="checkbox" name="screen_reader" value="yes">I use a screen reader and cannot grade my peer's images<br>
 <input type="submit" value="Submit">
