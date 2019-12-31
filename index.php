@@ -178,7 +178,7 @@ if ( $assn_id != false && $assn_json != null &&
 }
 
 // See if we are going to delete the submission
-if ( isset($assn_json) && isset($assn_json->resubmit) && 
+if ( isset($assn_json) && isset($assn_json->resubmit) &&
     $assn_json->resubmit == "always" && $dueDate->dayspastdue <= 0 &&
     $assn_id && $submit_id && isset($_POST['deleteSubmit']) ) {
 
@@ -296,7 +296,7 @@ if ( $USER->instructor ) {
     SettingsForm::dueDate();
     SettingsForm::done();
     SettingsForm::end();
-} 
+}
 
 $OUTPUT->welcomeUserCourse();
 
@@ -352,7 +352,7 @@ if ( $submit_row == false ) {
                 echo('<p style="color:red">Unable to load key/secret for '.htmlentities($endpoint)."</p>\n");
             } else {
                 $icon = $CFG->staticroot.'/font-awesome-4.4.0/png/check-square.png';
-                echo('<br/><button type="button" onclick="showModalIframe(\''.$part->title.'\', 
+                echo('<br/><button type="button" onclick="showModalIframe(\''.$part->title.'\',
                     \'content_item_dialog_'.$partno.'\',\'content_item_frame_'.$partno.'\', false); return false;">
                     Select/Create Item</button>'."\n");
                 echo('<img src="'.$icon.'" id="input_content_icon_'.$partno.'" style="display: none">'."\n");
@@ -424,8 +424,13 @@ $('.basicltiDebugToggle').hide();
     return;
 }
 
+// We have a submission already
+$submit_json = json_decode($submit_row['json']);
+
 if ( $assn_json->maxassess > 0 ) {
-    if ( count($to_grade) > 0 && 
+    if ( $submit_json && isset($submit_json->peer_exempt) ) {
+        echo("<p>You have no more peers to grade.</p>\n");
+    } else if ( count($to_grade) > 0 &&
         ($assn_json->peerpoints > 0 || $assn_json->rating > 0 ) &&
         ($USER->instructor || $grade_count < $assn_json->maxassess ) ) {
         if ( $assn_json->rating > 0 ) {
@@ -436,7 +441,7 @@ if ( $assn_json->maxassess > 0 ) {
 
         // Add a done button if needed
         echo("<p> You have reviewed ".$grade_count." other student submissions.
-            You must review at least ".$assn_json->minassess." submissions for 
+            You must review at least ".$assn_json->minassess." submissions for
             full credit on this assignment.\n");
         if ( $assn_json->maxassess < 100 ) {
             echo("You <i>can</i> review up to ".$assn_json->maxassess." submissions if you like.\n");
@@ -453,14 +458,12 @@ if ( $assn_json->gallery != 'off') {
     echo('<p><a href="gallery.php" class="btn btn-default">View All Submissions</a></p> '."\n");
 }
 
-// We have a submission already
-$submit_json = json_decode($submit_row['json']);
 echo("<p><b>Your Submission:</b></p>\n");
 showSubmission($assn_json, $submit_json, $assn_id, $USER->id);
 
 if ( $submit_row['inst_points'] > 0 ) {
     echo("<p>Instructor grade on assignment: ". $submit_row['inst_points']."</p>\n");
-} 
+}
 
 if ( strlen($submit_row['inst_note']) > 0 ) {
     echo("<p>Instructor Note:<br/>");
@@ -489,7 +492,7 @@ if ( $assn_json->maxassess < 1 ) {
             echo("<tr><td>".$show."</td>");
         }
         echo("<td>".htmlent_utf8($grade['note'])."</td>\n");
-    
+
         if ( $assn_json->flag ) echo(
             '<td><form><input type="submit" name="showFlag" value="Flag"'.
             'onclick="$(\'#flag_grade_id\').val(\''.$grade['grade_id'].
@@ -557,7 +560,7 @@ $(document).ready(function() {
 </script>
 
 <?php } ?>
- 
+
 <script src="<?= U::get_rest_parent() ?>/static/prism.js" type="text/javascript"></script>
 <?php
 $OUTPUT->footerEnd();

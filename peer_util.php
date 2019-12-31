@@ -198,13 +198,13 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
 
              echo('<br/><button type="button" onclick="
                 $(\'#content_item_frame_'.$content_item_no.'\').attr(\'src\', \''.$lu1.'\');
-                showModalIframe(\''.$part->title.'\', 
-                \'content_item_dialog_'.$content_item_no.'\',\'content_item_frame_'.$content_item_no.'\', 
-                \''.$OUTPUT->getSpinnerUrl().'\'); 
+                showModalIframe(\''.$part->title.'\',
+                \'content_item_dialog_'.$content_item_no.'\',\'content_item_frame_'.$content_item_no.'\',
+                \''.$OUTPUT->getSpinnerUrl().'\');
                 return false;">View Media</button>'."\n");
 ?>
 <div id="content_item_dialog_<?= $content_item_no ?>" title="Content Item Dialog" style="display:none;">
-<iframe src="about:blank" id="content_item_frame_<?= $content_item_no ?>" 
+<iframe src="about:blank" id="content_item_frame_<?= $content_item_no ?>"
     style="width:95%; height:500px;"
     scrolling="auto" frameborder="1" transparency></iframe>
 </div>
@@ -213,7 +213,7 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
         } else if ( $part->type == "code" && $codeno < count($codes) ) {
             $code_id = $codes[$codeno++];
             $row = $PDOX->rowDie("
-                SELECT data FROM {$CFG->dbprefix}peer_text 
+                SELECT data FROM {$CFG->dbprefix}peer_text
                 WHERE text_id = :TID AND user_id = :UID AND assn_id = :AID",
                 array( ":TID" => $code_id,
                     ":AID" => $assn_id,
@@ -234,7 +234,7 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
       </div>
       <div class="modal-body">
 <!-- Don't indent or inadvertently add a newline once the pre starts -->
-<pre class="line-numbers"><code 
+<pre class="line-numbers"><code
 <?php if ( isset($part->language) ) { ?>
 class="language-<?php echo($part->language); ?>"
 <?php } ?>
@@ -266,8 +266,11 @@ function computeGrade($assn_id, $assn_json, $user_id)
 {
     global $CFG, $PDOX;
 
+    // $submit_row = loadSubmission($assn_id, $USER->id);
+
     if ( $assn_json->totalpoints == 0 ) return 0;
-        $sql = "SELECT S.assn_id, S.user_id AS user_id, inst_points, email, displayname,
+    $sql = "SELECT S.assn_id, S.json AS json, S.user_id AS user_id,
+             inst_points, email, displayname,
              S.submit_id as submit_id, S.created_at AS created_at,
             MAX(points) as max_points, COUNT(points) as count_points
         FROM {$CFG->dbprefix}peer_submit as S
@@ -284,6 +287,13 @@ function computeGrade($assn_id, $assn_json, $user_id)
 
     if ( $row === false || $row['user_id']+0 == 0 ) return -1;
 
+    $submit_json_str = $row['json'];
+    $submit_json = false;
+    if ( strlen($submit_json_str) > 0 ) {
+        $submit_json = json_decode($submit_json_str);
+        error_log('Got it');
+    }
+
     // Compute the overall points
     $inst_points = $row['inst_points'] + 0;
     $assnpoints = $row['max_points']+0;
@@ -295,6 +305,12 @@ function computeGrade($assn_id, $assn_json, $user_id)
         $diff > $assn_json->autopeer && $assnpoints < $assn_json->peerpoints) {
 	// TODO: Turn this into an event
         error_log('Auto-peer '.time().' '.$diff.' '.$row['displayname']);
+        $assnpoints = $assn_json->peerpoints;
+    }
+
+    // Handle if student is exempt from peer grading
+    if ( $submit_json && isset($submit_json->peer_exempt) ) {
+        error_log('Accessible override '.time().' '.$row['displayname']);
         $assnpoints = $assn_json->peerpoints;
     }
 
@@ -451,7 +467,7 @@ function mailDeleteSubmit($user_id, $assn_json, $note)
     return $retval;
 }
 
-function getDefaultJson() 
+function getDefaultJson()
 {
     $json = '{ "title" : "Assignment title",
         "description" : "This is a sample assignment configuration showing the various kinds of items you can ask for in the assignment.",
