@@ -291,7 +291,6 @@ function computeGrade($assn_id, $assn_json, $user_id)
     $submit_json = false;
     if ( strlen($submit_json_str) > 0 ) {
         $submit_json = json_decode($submit_json_str);
-        error_log('Got it');
     }
 
     // Compute the overall points
