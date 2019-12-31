@@ -275,6 +275,16 @@ if ( $USER->instructor ) {
 $OUTPUT->header();
 ?>
 <link href="<?= U::get_rest_parent() ?>/static/prism.css" rel="stylesheet"/>
+<!-- https://webaim.org/techniques/css/invisiblecontent/ -->
+<style>
+.hidden
+{position:absolute;
+left:-10000px;
+top:auto;
+width:1px;
+height:1px;
+overflow:hidden;}
+</style>
 <?php
 
 $OUTPUT->bodyStart();
@@ -308,6 +318,7 @@ if ( $assn_json != null ) {
         echo($assn_json->solution."</a>\n");
     }
     echo('</p></div>');
+    echo('<div class="hidden"><a href="access.php">Click here for accessibility options</a></div>');
 }
 
 if ( $assn_json == null ) {
