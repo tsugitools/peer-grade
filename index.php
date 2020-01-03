@@ -277,19 +277,25 @@ $OUTPUT->header();
 <link href="<?= U::get_rest_parent() ?>/static/prism.css" rel="stylesheet"/>
 <!-- https://webaim.org/techniques/css/invisiblecontent/ -->
 <style>
-.hidden
-{position:absolute;
-left:-10000px;
-top:auto;
-width:1px;
-height:1px;
-overflow:hidden;}
+.skipNav
+{
+position: absolute;
+top: -30em;
+left: -30em;
+padding: 0 0 0 0;
+}
 </style>
 <?php
 
 $OUTPUT->bodyStart();
 $OUTPUT->topNav($menu);
 $OUTPUT->flashMessages();
+
+?>
+<div class="skipNav"><a href="access.php" 
+  title="accessibility options for this assignment" 
+  accesskey="a">Click here for accessibility options for this assignment</a></div>
+<?php
 
 if ( $USER->instructor ) {
     SettingsForm::start();
@@ -318,7 +324,6 @@ if ( $assn_json != null ) {
         echo($assn_json->solution."</a>\n");
     }
     echo('</p></div>');
-    echo('<div class="hidden"><a href="access.php">Click here for accessibility options</a></div>');
 }
 
 if ( $assn_json == null ) {
