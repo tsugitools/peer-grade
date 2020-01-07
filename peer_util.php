@@ -470,7 +470,7 @@ function getDefaultJson()
 {
     $json = '{ "title" : "Assignment title",
         "description" : "This is a sample assignment configuration showing the various kinds of items you can ask for in the assignment.",
-        "grading" : "This assignment is worth 10 points. 6 points come from your peers and 4 points come from you grading other student\'s submissions. Don\'t take off points for little mistakes.  If they seem to have done the assignment give them full credit.   Feel free to make suggestions if there are small mistakes.  Please keep your comments positive and useful.  If you do not take grading seriously, the instructors may delete your response and you will lose points.",
+        "grading" : "Don\'t take off points for little mistakes.  If they seem to have done the assignment give them full credit.   Feel free to make suggestions if there are small mistakes.  Please keep your comments positive and useful.  If you do not take grading seriously, the instructors may delete your response and you will lose points.",
         "parts" : [
             { "title" : "URL of your home page",
               "type" : "url"
