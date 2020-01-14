@@ -344,6 +344,10 @@ if ( $submit_row === false ) {
 } else {
     $submit_json = json_decode($submit_row['json']);
     showSubmission($assn_json, $submit_json, $assn_id, $user_id);
+    if ( $submit_json && isset($submit_json->peer_exempt) ) {
+        echo("<p>This student has requested an peer grading exemption due to accessibility issues.</p>\n");
+    }
+
 }
 
 echo('<form method="post">
