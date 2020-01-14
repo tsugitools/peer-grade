@@ -307,12 +307,6 @@ function computeGrade($assn_id, $assn_json, $user_id)
         $assnpoints = $assn_json->peerpoints;
     }
 
-    // Handle if student is exempt from peer grading
-    if ( $submit_json && isset($submit_json->peer_exempt) ) {
-        error_log('Accessible override '.time().' '.$row['displayname']);
-        $assnpoints = $assn_json->peerpoints;
-    }
-
     if ( $assnpoints < 0 ) $assnpoints = 0;
     if ( $assnpoints > $assn_json->peerpoints ) $assnpoints = $assn_json->peerpoints;
 
@@ -335,6 +329,13 @@ function computeGrade($assn_id, $assn_json, $user_id)
     if ( $gradecount < 0 ) $gradecount = 0;
     if ( $gradecount > $assn_json->minassess ) $gradecount = $assn_json->minassess;
     $gradepoints = $gradecount * $assn_json->assesspoints;
+
+    // Handle if student is exempt from peer grading
+    if ( $submit_json && isset($submit_json->peer_exempt) ) {
+        $gradepoints = $assn_json->minassess * $assn_json->assesspoints;
+        error_log('Accessible override '.time().' '.$row['displayname'].' points='.$gradepoints);
+    }
+
     $retval = ($inst_points + $assnpoints + $gradepoints) / $assn_json->totalpoints;
     if ( $retval > 1.0 ) $retval = 1.0;
     return $retval;
