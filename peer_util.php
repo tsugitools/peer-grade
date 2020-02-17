@@ -514,7 +514,7 @@ function pointsDetail($assn_json) {
         $r .= "You will get up to $assn_json->instructorpoints points from your instructor.\n";
     }
     if ( isset($assn_json->peerpoints) && $assn_json->peerpoints > 0 ) {
-        $r .= "You will get up to $assn_json->peerpoints points from your peers.\n";
+        $r .= "Your peers will give you a grade from 0 - $assn_json->peerpoints".".\n";
     }
     if ( isset($assn_json->assesspoints) && $assn_json->assesspoints > 0 ) {
         $r .= "You will get $assn_json->assesspoints for each peer assignment you assess.\n";
@@ -523,7 +523,7 @@ function pointsDetail($assn_json) {
         $r .= "You need to grade a minimum of $assn_json->minassess peer assignments.\n";
     }
     if ( isset($assn_json->maxassess) && $assn_json->maxassess >  $assn_json->minassess) {
-        $r .= "You can grade up to $assn_json->maxassess peer assignments if you like.\n";
+        $r .= "You can grade up to $assn_json->maxassess peer assignments if you like but grading extra assignment will not increase your score.\n";
     }
     return $r;
 }
