@@ -457,6 +457,7 @@ placeholder=" .. Title (Required) .." required>
 <option value="">-- Select Type of Submission --</option>
 <option value="image">Image</option>
 <option value="url">URL</option>
+<option value="html">Formatted text</option>
 <option value="code">Code/text</option>
 </select>
 &nbsp;

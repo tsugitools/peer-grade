@@ -183,6 +183,9 @@ if ( $submit_json === null ) {
 $OUTPUT->header();
 ?>
 <link href="<?= U::get_rest_parent() ?>/static/prism.css" rel="stylesheet"/>
+<script>
+let html_loads = [];
+</script>
 <?php
 $OUTPUT->bodyStart();
 $OUTPUT->topNav();
@@ -238,4 +241,5 @@ $OUTPUT->footerStart();
 <script src="<?= U::get_rest_parent() ?>/static/prism.js" type="text/javascript"></script>
 </script>
 <?php
+load_htmls();
 $OUTPUT->footerEnd();

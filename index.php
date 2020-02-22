@@ -65,6 +65,7 @@ if ( $assn_id != false && $assn_json != null &&
     $blob_ids = array();
     $urls = array();
     $code_ids = array();
+    $html_ids = array();
     $content_items = array();
     $partno = 0;
     foreach ( $assn_json->parts as $part ) {
@@ -144,6 +145,23 @@ if ( $assn_id != false && $assn_json != null &&
                     ':UID' => $USER->id)
             );
             $code_ids[] = $PDOX->lastInsertId();
+        } else if ( $part->type == 'html' ) {
+            $html = $_POST['input_html_'.$partno];
+            if( strlen($html) < 1 ) {
+                $_SESSION['error'] = 'Missing: '.$part->title;
+                header( 'Location: '.addSession('index') ) ;
+                return;
+            }
+            $PDOX->queryDie("
+                INSERT INTO {$p}peer_text
+                    (assn_id, user_id, data, created_at, updated_at)
+                    VALUES ( :AID, :UID, :DATA, NOW(), NOW() )",
+                array(
+                    ':AID' => $assn_id,
+                    ':DATA' => $html,
+                    ':UID' => $USER->id)
+            );
+            $html_ids[] = $PDOX->lastInsertId();
         }
         $partno++;
     }
@@ -153,6 +171,7 @@ if ( $assn_id != false && $assn_json != null &&
     $submission->blob_ids = $blob_ids;
     $submission->urls = $urls;
     $submission->codes = $code_ids;
+    $submission->htmls = $html_ids;
     $submission->content_items = $content_items;
     $json = json_encode($submission);
     $stmt = $PDOX->queryReturnError(
@@ -276,6 +295,9 @@ $OUTPUT->header();
 ?>
 <link href="<?= U::get_rest_parent() ?>/static/prism.css" rel="stylesheet"/>
 <!-- https://webaim.org/techniques/css/invisiblecontent/ -->
+<script>
+let html_loads = [];
+</script>
 <style>
 .skipNav
 {
@@ -343,6 +365,7 @@ if ( $submit_row == false ) {
 
     $partno = 0;
     $content_items = array();
+    $html_items = array();
     foreach ( $assn_json->parts as $part ) {
         echo("\n<p>");
         echo(htmlent_utf8($part->title)."\n");
@@ -367,6 +390,9 @@ if ( $submit_row == false ) {
             echo('<input name="input_url_'.$partno.'" type="url" size="80"></p>');
         } else if ( $part->type == "code" ) {
             echo('<br/><textarea name="input_code_'.$partno.'" rows="10" style="width: 90%"></textarea></p>');
+        } else if ( $part->type == "html" ) {
+            $html_items[] = $partno;
+            echo('<br/><textarea name="input_html_'.$partno.'" id="input_html_'.$partno.'" rows="10" style="width: 90%"></textarea></p>');
         }
         $partno++;
     }
@@ -423,6 +449,27 @@ if ( $submit_row == false ) {
 ?>
 <script>
 $('.basicltiDebugToggle').hide();
+</script>
+<script src="https://cdn.ckeditor.com/ckeditor5/16.0.0/classic/ckeditor.js"></script>
+<script>
+    html_items = [];
+<?php
+    foreach($html_items as $html_item) {
+        echo("html_items.push($html_item);\n");
+    }
+?>
+    for(i=0; i< html_items.length; i++ ) {
+        var the_item = html_items[i];
+
+        ClassicEditor
+            .create( document.querySelector( '#input_html_'+the_item )
+            ).then(editor => {
+                // editor.isReadOnly = true;
+            } ).catch( error => {
+                console.error( error );
+            } );
+        console.log("Item", html_items[i]);
+    }
 </script>
 <?php
     $OUTPUT->footerEnd();
@@ -556,6 +603,7 @@ function gradeLoad() {
 <?php
 }
 $OUTPUT->footerStart();
+$json_url = 'http://localhost:8888/py4e/mod/peer-grade/load_html.php?html_id=1&assn_id=1&user_id=6';
 ?>
 <?php if ( $assn_json->totalpoints > 0 ) { ?>
 <script type="text/javascript">
@@ -567,6 +615,8 @@ $(document).ready(function() {
 <?php } ?>
 
 <script src="<?= U::get_rest_parent() ?>/static/prism.js" type="text/javascript"></script>
+
 <?php
+load_htmls();
 $OUTPUT->footerEnd();
 

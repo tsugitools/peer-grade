@@ -168,6 +168,9 @@ if ( isset($_POST['rating']) && isset($_POST['submit_id'])
 $OUTPUT->header();
 ?>
 <link href="<?= U::get_rest_parent() ?>/static/prism.css" rel="stylesheet"/>
+<script>
+let html_loads = [];
+</script>
 <?php
 $OUTPUT->bodyStart();
 $OUTPUT->topNav();
@@ -246,4 +249,5 @@ $("#jRate").jRate(
 </script>
 <?php } ?>
 <?php
+load_htmls();
 $OUTPUT->footerEnd();

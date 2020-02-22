@@ -105,7 +105,9 @@ pre {padding-left: 2em;}
     display: none;
 }
 </style>
-</style>
+<script>
+let html_loads = [];
+</script>
 <?php
 $OUTPUT->bodyStart();
 $OUTPUT->topNav();
@@ -219,4 +221,5 @@ $(function(){
 });
 </script>
 <?php
+load_htmls();
 $OUTPUT->footerEnd();

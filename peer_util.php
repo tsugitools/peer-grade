@@ -145,10 +145,16 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
     $blob_ids = $submit_json->blob_ids;
     $urls = isset($submit_json->urls) ? $submit_json->urls : array();
     $codes = isset($submit_json->codes) ? $submit_json->codes : array();
+    $htmls = isset($submit_json->htmls) ? $submit_json->htmls : array();
+
+    //TODO: Remove this after April 2020
+    if ( count($htmls) == 0 && count($codes) > 0 ) $htmls = $codes;
+
     $content_items = isset($submit_json->content_items) ? $submit_json->content_items : array();
     $blobno = 0;
     $urlno = 0;
     $codeno = 0;
+    $htmlno = 0;
     $content_item_no = 0;
     foreach ( $assn_json->parts as $part ) {
         if ( $part->type == "image" ) {
@@ -210,6 +216,40 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
 </div>
 <?php
             $content_item_no++;
+        } else if ( $part->type == "html" && $htmlno < count($htmls) ) {
+            $html_id = $htmls[$htmlno++];
+            $row = $PDOX->rowDie("
+                SELECT data FROM {$CFG->dbprefix}peer_text
+                WHERE text_id = :TID AND user_id = :UID AND assn_id = :AID",
+                array( ":TID" => $html_id,
+                    ":AID" => $assn_id,
+                    ":UID" => $user_id)
+            );
+            $json_url = addSession("load_html.php?html_id=$html_id&user_id=$user_id");
+            if ( $row === FALSE || strlen($row['data']) < 1 ) {
+                echo("<p>No HTML Found</p>\n");
+            } else {
+                echo ('<p>HTML: <a href="#" onclick="$(\'#myModal_html_'.$htmlno.'\').modal();">');
+                echo(htmlent_utf8($part->title)."</a> (click to view)</p>\n");
+?>
+<div class="modal fade" id="myModal_html_<?php echo($htmlno); ?>">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"><?php echo(htmlent_utf8($part->title)); ?></h4>
+      </div>
+      <div class="modal-body" id="html_content_<?php echo($htmlno); ?>">
+            <img src="<?= $OUTPUT->getSpinnerUrl() ?>"/>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+html_loads.push(['html_content_<?php echo($htmlno); ?>', '<?= $json_url ?>']);
+</script>
+<?php
+            }
         } else if ( $part->type == "code" && $codeno < count($codes) ) {
             $code_id = $codes[$codeno++];
             $row = $PDOX->rowDie("
@@ -260,6 +300,24 @@ class="language-<?php echo($part->language); ?>"
         echo("<p>Notes: ".htmlent_utf8($submit_json->notes)."</p>\n");
     }
     echo('<div style="padding:3px">');
+}
+
+function load_htmls() {
+    global $CFG;
+?>
+<script src="<?= $CFG->staticroot ?>/js/HtmlSanitizer.js"></script>
+<script type="text/javascript">
+$(document).ready( function () {
+    for(i=0; i<html_loads.length; i++) {
+        var divname = html_loads[i][0];
+        $.get(html_loads[i][1], function(data) {
+            var html = HtmlSanitizer.SanitizeHtml(data);
+            $('#'+divname).html(html);
+        })
+    }
+});
+</script>
+<?php
 }
 
 function computeGrade($assn_id, $assn_json, $user_id)
@@ -478,13 +536,12 @@ function getDefaultJson()
             { "title" : "URL of your home page",
               "type" : "url"
             },
+            { "title" : "Some HTML using the CKEditor",
+              "type" : "html",
+            },
             { "title" : "Source code of index.php with your name",
               "type" : "code",
               "language" : "php"
-            },
-            { "title" : "Some HTML using the bold tag",
-              "type" : "code",
-              "language" : "markup"
             },
             { "title" : "Image (JPG or PNG) of your home page (Maximum 1MB per file)",
               "type" : "image"
