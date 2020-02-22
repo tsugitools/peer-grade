@@ -461,6 +461,27 @@ $('.basicltiDebugToggle').hide();
     for(i=0; i< html_items.length; i++ ) {
         var the_item = html_items[i];
 
+ClassicEditor.defaultConfig = {
+    toolbar: {
+        items: [
+            'heading',
+            '|',
+            'bold',
+            'italic',
+            'link',
+            'bulletedList',
+            'numberedList',
+            // 'imageUpload',
+            'blockQuote',
+            'insertTable',
+            'mediaEmbed',
+            'undo',
+            'redo'
+        ]
+    },
+
+}
+
         ClassicEditor
             .create( document.querySelector( '#input_html_'+the_item )
             ).then(editor => {
