@@ -537,7 +537,7 @@ function getDefaultJson()
               "type" : "url"
             },
             { "title" : "Some HTML using the CKEditor",
-              "type" : "html",
+              "type" : "html"
             },
             { "title" : "Source code of index.php with your name",
               "type" : "code",
