@@ -299,7 +299,7 @@ class="language-<?php echo($part->language); ?>"
     echo("<br/>&nbsp;<br/>\n");
 
     if ( $blobno > 0 ) {
-        echo("<p>Click on each image to see a larger view of the image.</p>\n");
+        echo("<p>Click on each image/pdf to see a larger view of the image.</p>\n");
     }
 
     if ( strlen($submit_json->notes) > 1 ) {

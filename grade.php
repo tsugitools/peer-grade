@@ -59,8 +59,7 @@ if ( isset($_POST['doFlag']) && isset($_POST['submit_id']) ) {
 }
 
 // Handle the grade data
-if ( isset($_POST['points']) && isset($_POST['submit_id'])
-    && isset($_POST['user_id']) ) {
+if ( isset($_POST['submit_id']) && isset($_POST['user_id']) ) {
 
     if ( (!isset($_SESSION['peer_submit_id'])) ||
         $_SESSION['peer_submit_id'] != $_POST['submit_id'] ) {
@@ -68,12 +67,6 @@ if ( isset($_POST['points']) && isset($_POST['submit_id'])
         unset($_SESSION['peer_submit_id']);
         $_SESSION['error'] = 'Error in submission id';
         header( 'Location: '.addSession($url_goback) ) ;
-        return;
-    }
-
-    if ( strlen($_POST['points']) < 1 ) {
-        $_SESSION['error'] = 'Points are required';
-        header( 'Location: '.addSession($url_stay) ) ;
         return;
     }
 

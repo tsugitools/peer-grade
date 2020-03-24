@@ -496,7 +496,6 @@ if ( $assn_json->maxassess > 0 ) {
     if ( $submit_json && isset($submit_json->peer_exempt) ) {
         echo("<p>You have no more peers to grade.</p>\n");
     } else if ( count($to_grade) > 0 &&
-        ($assn_json->peerpoints > 0 || $assn_json->rating > 0 ) &&
         ($USER->instructor || $grade_count < $assn_json->maxassess ) ) {
         if ( $assn_json->rating > 0 ) {
             echo('<p><a href="grade" class="btn btn-default">Rate other students</a></p>'."\n");
