@@ -63,6 +63,9 @@ if ( isset($_POST['deleteSubmit']) ) {
         header( 'Location: '.addSession('index') ) ;
         return;
     }
+
+    deleteSubmission($row, $submit_row);
+
     $note = isset($_POST['deleteNote']) ? $_POST['deleteNote'] : '';
     $retval = mailDeleteSubmit($user_id, $assn_json, $note);
     $stmt = $PDOX->queryDie(

@@ -584,3 +584,48 @@ function pointsDetail($assn_json) {
     }
     return $r;
 }
+
+
+function deleteSubmission($assn_row, $submit_row) {
+    global $PDOX, $USER, $CFG;
+
+    $p = $CFG->dbprefix;
+    $assn_id = $assn_row['assn_id'];
+    $submit_id = $submit_row['submit_id'];
+
+    $json = isset($submit_row['json']) ? $submit_row['json'] : false;
+    if ( $json && strlen($json) > 0 ) $json = json_decode($json);
+
+    if ( $json ) $blob_ids = isset($json->blob_ids) ? $json->blob_ids : false;
+    if ( is_array($blob_ids) ) {
+        foreach($blob_ids as $blob_id ) {
+            echo("Delete blob $blob_id \n");
+            BlobUtil::deleteBlob($blob_id);
+        }
+    }
+
+    if ( $json ) $pdf_ids = isset($json->pdf_ids) ? $json->pdf_ids : false;
+    if ( is_array($pdf_ids) ) {
+        foreach($pdf_ids as $blob_id ) {
+            echo("Delete blob $blob_id \n");
+            BlobUtil::deleteBlob($blob_id);
+        }
+    }
+
+    $stmt = $PDOX->queryDie(
+        "DELETE FROM {$p}peer_submit
+            WHERE submit_id = :SID",
+        array( ':SID' => $submit_id)
+    );
+
+    // Since text items are connected to the assignment not submission
+    $stmt = $PDOX->queryDie(
+        "DELETE FROM {$p}peer_text
+            WHERE assn_id = :AID AND user_id = :UID",
+        array( ':AID' => $assn_id, ':UID' => $USER->id)
+    );
+
+    Cache::clear('peer_grade');
+    Cache::clear('peer_submit');
+}
+

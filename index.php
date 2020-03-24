@@ -201,20 +201,8 @@ if ( isset($assn_json) && isset($assn_json->resubmit) &&
     $assn_json->resubmit == "always" && $dueDate->dayspastdue <= 0 &&
     $assn_id && $submit_id && isset($_POST['deleteSubmit']) ) {
 
-    $stmt = $PDOX->queryDie(
-        "DELETE FROM {$p}peer_submit
-            WHERE submit_id = :SID",
-        array( ':SID' => $submit_id)
-    );
+    deleteSubmission($row, $submit_row);
 
-    // Since text items are connected to the assignment not submission
-    $stmt = $PDOX->queryDie(
-        "DELETE FROM {$p}peer_text
-            WHERE assn_id = :AID AND user_id = :UID",
-        array( ':AID' => $assn_id, ':UID' => $USER->id)
-    );
-    Cache::clear('peer_grade');
-    Cache::clear('peer_submit');
     $msg = "Deleted submission for user ".$USER->id." ".$USER->email;
     error_log($msg);
     $_SESSION['success'] = "Submission deleted.";
