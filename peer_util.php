@@ -147,9 +147,6 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
     $codes = isset($submit_json->codes) ? $submit_json->codes : array();
     $htmls = isset($submit_json->htmls) ? $submit_json->htmls : array();
 
-    //TODO: Remove this after April 2020
-    if ( count($htmls) == 0 && count($codes) > 0 ) $htmls = $codes;
-
     $content_items = isset($submit_json->content_items) ? $submit_json->content_items : array();
     $blobno = 0;
     $urlno = 0;
@@ -184,6 +181,15 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <?php
+        } else if ( $part->type == "pdf" ) {
+            $blob_id = $blob_ids[$blobno++];
+            if ( is_array($blob_id) ) $blob_id = $blob_id[0];
+            $url = BlobUtil::getAccessUrlForBlob($blob_id);
+            $title = 'Student PDF';
+            if( isset($part->title) && strlen($part->title) > 0 ) $title = $part->title;
+            // Need session because target="_blank"
+            echo ('<p><a href="'.addSession(safe_href($url)).'" target="_blank">');
+            echo (htmlentities($title).'</a> (Will launch in new window)</p>'."\n");
         } else if ( $part->type == "url" && $urlno < count($urls) ) {
             $url = $urls[$urlno++];
             echo ('<p><a href="'.safe_href($url).'" target="_blank">');

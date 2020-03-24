@@ -456,6 +456,7 @@ placeholder=" .. Title (Required) .." required>
 <select name="part_type_@PART@" id="part_type_@PART@" class="part_type" onchange="update_part_form(@PART@);">
 <option value="">-- Select Type of Submission --</option>
 <option value="image">Image</option>
+<option value="pdf">PDF</option>
 <option value="url">URL</option>
 <option value="html">Formatted text</option>
 <option value="code">Code/text</option>

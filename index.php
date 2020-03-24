@@ -69,7 +69,7 @@ if ( $assn_id != false && $assn_json != null &&
     $content_items = array();
     $partno = 0;
     foreach ( $assn_json->parts as $part ) {
-        if ( $part->type == 'image' ) {
+        if ( $part->type == 'image' || $part->type == 'pdf') {
             $fname = 'uploaded_file_'.$partno;
             if( ! isset($_FILES[$fname]) ) {
                 $_SESSION['error'] = 'Problem with uploaded files - perhaps your files were too large';
@@ -87,8 +87,9 @@ if ( $assn_id != false && $assn_json != null &&
                 return;
             }
 
+            $mime_types =  $part->type == 'image' ? array("image/png", "image/jpeg") : array("application/pdf");
             // Sanity-check the file
-            $safety = BlobUtil::checkFileSafety($fdes);
+            $safety = BlobUtil::checkFileSafety($fdes, $mime_types);
             if ( $safety !== true ) {
                 $_SESSION['error'] = "Error: ".$safety;
                 error_log("Upload Error: ".$safety);
@@ -97,7 +98,7 @@ if ( $assn_id != false && $assn_json != null &&
             }
 
             // Check the kind of file
-            if ( ! BlobUtil::isPngOrJpeg($fdes) ) {
+            if ( $part->type == 'image' && ! BlobUtil::isPngOrJpeg($fdes) ) {
                 $_SESSION['error'] = 'Files must either contain JPG, or PNG images: '.$filename;
                 error_log("Upload Error - Not an Image: ".$filename);
                 header( 'Location: '.addSession('index') ) ;
@@ -359,7 +360,10 @@ if ( $submit_row == false ) {
         echo(htmlent_utf8($part->title)."\n");
         if ( $part->type == "image" ) {
             $image_count++;
-            echo('<input name="uploaded_file_'.$partno.'" type="file"> (Please use PNG or JPG files)</p>');
+            echo('<input name="uploaded_file_'.$partno.'" type="file" class="tsugi_image"> (Please use PNG or JPG files)</p>');
+        } else if ( $part->type == "pdf" ) {
+            $image_count++;
+            echo('<input name="uploaded_file_'.$partno.'" type="file" class="tsugi_pdf"> (Please upload a PDF)</p>');
         } else if ( $part->type == "content_item" ) {
             $endpoint = $part->launch;
             $info = LTIX::getKeySecretForLaunch($endpoint);
