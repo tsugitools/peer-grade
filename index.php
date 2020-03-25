@@ -39,6 +39,17 @@ if ( $row !== false && strlen($row['json']) > 0 ) {
     $assn_id = $row['assn_id'];
 }
 
+$upload_max_size_bytes = BlobUtil::maxUploadBytes();
+$image_max = (int) $assn_json->image_size;
+$image_max = $image_max * 1024 * 1024;
+if ( $image_max == 0 ) $image_max = $upload_max_size_bytes;
+$image_max_text = U::displaySize($image_max);
+
+$pdf_max = (int) $assn_json->pdf_size;
+$pdf_max = $pdf_max * 1024 * 1024;
+if ( $pdf_max == 0 ) $pdf_max = $upload_max_size_bytes;
+$pdf_max_text = U::displaySize($pdf_max);
+
 // Load up the submission and parts if they exist
 $submit_id = false;
 $submit_row = loadSubmission($assn_id, $USER->id);
@@ -53,6 +64,7 @@ if ( $assn_id != false && $assn_json != null &&
         return;
     }
 
+    /* TODO: Remove this 
     // Check all files to be within our size limit
     foreach($_FILES as $fdes) {
         if ( $fdes['size'] > 1024*1024 ) {
@@ -61,6 +73,7 @@ if ( $assn_id != false && $assn_json != null &&
             return;
         }
     }
+     */
 
     $blob_ids = array();
     $urls = array();
@@ -87,8 +100,18 @@ if ( $assn_id != false && $assn_json != null &&
                 return;
             }
 
-            $mime_types =  $part->type == 'image' ? array("image/png", "image/jpeg") : array("application/pdf");
+            $filesize = $part->type == 'image' ? $assn_json->image_size : $assn_json->pdf_size;
+            $filesize = $filesize * 1024 * 1024;
+            if ( $filesize == 0 ) $filesize = $upload_max_size_bytes;
+            $filesize_text = U::displaySize($filesize);
+            if ( $fdes['size'] > $filesize ) {
+                $_SESSION['error'] = 'Error - '.$fdes['name'].' has a size of '.$fdes['size'].' which is > '.$filesize_text;
+                header( 'Location: '.addSession('index') ) ;
+                return;
+            }
+
             // Sanity-check the file
+            $mime_types =  $part->type == 'image' ? array("image/png", "image/jpeg") : array("application/pdf");
             $safety = BlobUtil::checkFileSafety($fdes, $mime_types);
             if ( $safety !== true ) {
                 $_SESSION['error'] = "Error: ".$safety;
@@ -360,10 +383,14 @@ if ( $submit_row == false ) {
         echo(htmlent_utf8($part->title)."\n");
         if ( $part->type == "image" ) {
             $image_count++;
-            echo('<input name="uploaded_file_'.$partno.'" type="file" class="tsugi_image"> (Please use PNG or JPG files)</p>');
+            echo('<input name="uploaded_file_'.$partno.'" data-max-size="'.$image_max.'"
+                accept="image/png, image/jpg"
+                type="file" class="tsugi_image"> (Please use PNG or JPG files '.$image_max_text.' max)</p>');
         } else if ( $part->type == "pdf" ) {
             $image_count++;
-            echo('<input name="uploaded_file_'.$partno.'" type="file" class="tsugi_pdf"> (Please upload a PDF)</p>');
+            echo('<input name="uploaded_file_'.$partno.'" data-max-size="'.$pdf_max.'"
+                accept="application/pdf"
+                type="file" class="tsugi_pdf"> (Please upload a PDF '.$pdf_max_text.' max)</p>');
         } else if ( $part->type == "content_item" ) {
             $endpoint = $part->launch;
             $info = LTIX::getKeySecretForLaunch($endpoint);
@@ -440,6 +467,9 @@ if ( $submit_row == false ) {
     $OUTPUT->footerStart();
 ?>
 <script>
+// Set up the checking of data-max-size in type="file" inputs
+tsugiCheckFileMaxSize();
+
 $('.basicltiDebugToggle').hide();
 </script>
 <script src="https://cdn.ckeditor.com/ckeditor5/16.0.0/classic/ckeditor.js"></script>

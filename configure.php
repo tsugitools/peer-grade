@@ -6,6 +6,7 @@ use \Tsugi\Util\U;
 use \Tsugi\Util\LTI;
 use \Tsugi\Core\Cache;
 use \Tsugi\Core\LTIX;
+use \Tsugi\Blob\BlobUtil;
 
 // Sanity checks
 $LTI = LTIX::requireData();
@@ -44,6 +45,8 @@ if ( isset($_POST['save_settings']) ) {
     "resubmit" => U::get($_POST, 'resubmit'),
     "autopeer" => U::get($_POST, 'autopeer'),
     "notepublic" => U::get($_POST, 'notepublic'),
+    "image_size" => U::get($_POST, 'image_size', '1'),
+    "pdf_size" => U::get($_POST, 'pdf_size'),
     "flag" => U::get($_POST, 'flag')
   );
   // var_dump($jsonArray);
@@ -113,8 +116,8 @@ $OUTPUT->header();
 ?>
 <style>
 .fieldset {
-    border: 1px black solid; 
-    padding: 5px; 
+    border: 1px black solid;
+    padding: 5px;
     margin: 5px;
 }
 
@@ -176,10 +179,10 @@ function input_radio($jsonObj, $field, $value, $onclick=false) {
 <form method="post">
     <p>
       <span data-toggle="tooltip" title="
-Description of assignment shown to students.  This can be edited 
+Description of assignment shown to students.  This can be edited
 at any time - even after the assignment has started.
 ">Assignment Title <i class="fa fa-question-circle-o" aria-hidden="true"></i></span><br/>
-      <input type="text" name="title" 
+      <input type="text" name="title"
         value="<?= htmlentities(U::get($jsonObj,'title')) ?>"
         style="width:90%"/>
     </p>
@@ -203,18 +206,18 @@ This can be edited at any time - even after the assignment has started.
     </p>
 <div class="fieldset">
 <p>
-Total points are calculated by adding 
+Total points are calculated by adding
 points from peer-graders,
-the instructor-assigned points, 
-and the points awarded for doing peer grading.  
-If you are using ratings and gallery mode (below) 
+the instructor-assigned points,
+and the points awarded for doing peer grading.
+If you are using ratings and gallery mode (below)
 you might want to set all of these points to zero.
 </p>
     <p>
       <span data-toggle="tooltip" title="This is the maximum points that come from the other students assessments. Each of the peer-graders will assign a value up to this number. If this is zero, students can comment on assignments but not assign a score. Currently the grading policy is to take the highest score from peers since this is really intended for pass/fail assignments and getting feedback from peers rather than carefully crafted assignments with subtle differences in the scores.">
 Points from Peers
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
-      <input type="number" name="peerpoints" 
+      <input type="number" name="peerpoints"
         value="<?= htmlentities(U::get($jsonObj,'peerpoints')) ?>"
         required/>
 <i class="fa fa-asterisk" aria-hidden="true"></i>
@@ -223,7 +226,7 @@ Points from Peers
       <span data-toggle="tooltip" title="This is the number of points that come from the instructor. Leave this as zero for a purely peer-graded assignment. Set all other values to zero to create a purely instructor graded drop box.">
 Instructor Points
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
-      <input type="number" name="instructorpoints" 
+      <input type="number" name="instructorpoints"
         value="<?= htmlentities(U::get($jsonObj,'instructorpoints')) ?>"
       required/>
 <i class="fa fa-asterisk" aria-hidden="true"></i>
@@ -232,7 +235,7 @@ Instructor Points
       <span data-toggle="tooltip" title="This is the number of points students get for each peer assessment that they perform. If this is zero, students can do peer assessing/commenting but will not award points for their efforts.">
 Points for doing an Assessment
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
-      <input type="number" name="assesspoints" 
+      <input type="number" name="assesspoints"
         value="<?= htmlentities(U::get($jsonObj,'assesspoints')) ?>"
         required/>
 <i class="fa fa-asterisk" aria-hidden="true"></i>
@@ -263,10 +266,9 @@ Total Points (computed):
 </div>
 <div class="fieldset">
     <p>
-      This is a list of deliverables for the assignment. You must have at least one deliverable.  Each deliverable has a title and type. 
-      Images must be PNG or JPG and  &lt; 1MB in size.
+      This is a list of deliverables for the assignment. You must have at least one deliverable.  Each deliverable has a title and type.
       The title text for a deliverable can be edited at any time. You should not change
-      the order number, type, or order of the deliverables once the assignment has started. 
+      the order number, type, or order of the deliverables once the assignment has started.
 </p>
 <p>
       <button id="add_part" type="button">Add New Deliverable</button>
@@ -291,16 +293,31 @@ Student Initiated Resubmit
     </p>
     <p>
       <span data-toggle="tooltip" title="
-A number of minutes after which if a submission has not received any peer 'grades', we automatically assign a peer grade. 
+A number of minutes after which if a submission has not received any peer 'grades', we automatically assign a peer grade.
 Leave this value zero to disable this feature.
-The value is in seconds so a week is 7*24*60*60 or 604800. 
+The value is in seconds so a week is 7*24*60*60 or 604800.
 The student needs to view their submission or a batch process has to run to trigger this processing.
 ">
 Automatic Peer Grading Interval
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
-      <input type="number" name="autopeer" 
+      <input type="number" name="autopeer"
         value="<?= htmlentities(U::get($jsonObj,'autopeer')) ?>"
         required/>
+    </p>
+<p>
+The maximum file size that can be uploaded to this course is
+<?= BlobUtil::maxUpload() ?> MB per *form*.  You can set
+lower limits per artifact if you like.
+</p>
+<p>
+Maximum image size (MB)
+      <input type="number" name="image_size"
+        value="<?= htmlentities(U::get($jsonObj,'image_size')) ?>" />
+    </p>
+<p>
+Maximum PDF size (MB)
+      <input type="number" name="pdf_size"
+        value="<?= htmlentities(U::get($jsonObj,'pdf_size')) ?>" />
     </p>
 </div>
 <div class="fieldset">
@@ -326,7 +343,7 @@ Gallery Format
       <?= input_radio($jsonObj, 'galleryformat', 'table') ?>Table &nbsp;
     </p>
     <p class="gallery">
-      <span data-toggle="tooltip" title="This indicates that the peers are rating the submission rather than grading the submission. The number is the rating scale (1-10). If you use ratings, you should not use peer gradoing at all..">
+      <span data-toggle="tooltip" title="This indicates that the peers are rating the submission rather than grading the submission. The number is the rating scale (1-10). If you use ratings, you should not use peer grading at all..">
 Rating
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span><br/>
       <?= input_radio($jsonObj, 'rating', '0') ?>Off &nbsp;
@@ -368,7 +385,7 @@ function gallery_off() {
 }
 
 function compute_total() {
-    if ($("input[name='instructorpoints']").val().length > 0 && $("input[name='peerpoints']").val().length > 0 && 
+    if ($("input[name='instructorpoints']").val().length > 0 && $("input[name='peerpoints']").val().length > 0 &&
         $("input[name='assesspoints']").val().length > 0 && $("input[name='minassess']").val().length > 0){
 
         var inst_points = parseFloat($("input[name='instructorpoints']").val());
@@ -430,7 +447,7 @@ $( document ).ready(function() {
 });
 
 $(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip(); 
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 function update_part_form(partno) {

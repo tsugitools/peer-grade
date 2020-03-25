@@ -116,6 +116,8 @@ function upgradeSubmission($json_str)
     if ( ! isset($json->autopeer) ) $json->autopeer = 0;
     if ( $json->autopeer === false ) $json->autopeer = 0;
     if ( ! isset($json->notepublic) ) $json->notepublic = "false";
+    if ( ! isset($json->image_size) ) $json->image_size = 1;
+    if ( ! isset($json->pdf_size) ) $json->pdf_size = 0; // Max
     return json_encode($json);
 }
 
