@@ -12,9 +12,12 @@ if ( isset($_POST['doClear']) ) {
     die('session unset');
 }
 
+$menu = new \Tsugi\UI\MenuSet();
+$menu->addLeft(__('Back'), 'index');
+
 $OUTPUT->header();
 $OUTPUT->bodyStart();
-$OUTPUT->topNav();
+$OUTPUT->topNav($menu);
 $OUTPUT->flashMessages();
 $OUTPUT->welcomeUserCourse();
 
@@ -22,7 +25,6 @@ $OUTPUT->togglePre("Session data",$OUTPUT->safe_var_dump($_SESSION));
 
 ?>
 <form method="post">
-<input type="submit" name="doExit" onclick="location='<?php echo(addSession('index'));?>'; return false;" value="Exit">
 <input type="submit" name="doClear" value="Clear Session (will log out out)">
 </form>
 <?php

@@ -40,12 +40,12 @@ if ( $row !== false && strlen($row['json']) > 0 ) {
 }
 
 $upload_max_size_bytes = BlobUtil::maxUploadBytes();
-$image_max = (int) $assn_json->image_size;
+$image_max = isset($assn_json->image_size) ? (int) $assn_json->image_size : 0;
 $image_max = $image_max * 1024 * 1024;
 if ( $image_max == 0 ) $image_max = $upload_max_size_bytes;
 $image_max_text = U::displaySize($image_max);
 
-$pdf_max = (int) $assn_json->pdf_size;
+$pdf_max = isset($assn_json->pdf_size) ? (int) $assn_json->pdf_size : 0;
 $pdf_max = $pdf_max * 1024 * 1024;
 if ( $pdf_max == 0 ) $pdf_max = $upload_max_size_bytes;
 $pdf_max_text = U::displaySize($pdf_max);
