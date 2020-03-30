@@ -59,7 +59,7 @@ if ( isset($_POST['doFlag']) && isset($_POST['submit_id']) ) {
 }
 
 // Handle the grade data
-if ( isset($_POST['submit_id']) && isset($_POST['user_id']) && isset($_POST['points']) ) {
+if ( isset($_POST['submit_id']) && isset($_POST['user_id']) ) {
 
     if ( (!isset($_SESSION['peer_submit_id'])) ||
         $_SESSION['peer_submit_id'] != $_POST['submit_id'] ) {
@@ -70,17 +70,20 @@ if ( isset($_POST['submit_id']) && isset($_POST['user_id']) && isset($_POST['poi
         return;
     }
 
-    if ( ! is_numeric($_POST['points']) ) {
-        $_SESSION['error'] = 'Points must be numeric and between 0 and '.$assn_json->peerpoints;
-        header( 'Location: '.addSession($url_stay) ) ;
-        return;
-    }
+    $points = null;
+    if ( isset($_POST['points']) ) {
+        if ( ! is_numeric($_POST['points']) ) {
+            $_SESSION['error'] = 'Points must be numeric and between 0 and '.$assn_json->peerpoints;
+            header( 'Location: '.addSession($url_stay) ) ;
+            return;
+        }
 
-    $points = $_POST['points']+0;
-    if ( $points < 0 || $points > $assn_json->peerpoints ) {
-        $_SESSION['error'] = 'Points must be between 0 and '.$assn_json->peerpoints;
-        header( 'Location: '.addSession($url_stay) ) ;
-        return;
+        $points = $_POST['points']+0;
+        if ( $points < 0 || $points > $assn_json->peerpoints ) {
+            $_SESSION['error'] = 'Points must be between 0 and '.$assn_json->peerpoints;
+            header( 'Location: '.addSession($url_stay) ) ;
+            return;
+        }
     }
 
     // Check to see if user_id is correct for this submit_id
