@@ -63,6 +63,8 @@ function loadAssignment()
         );
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    if ( ! $row ) return $row;
+
     $row['json'] = upgradeSubmission($row['json'] );
     Cache::set($cacheloc, $LINK->id, $row);
     return $row;
