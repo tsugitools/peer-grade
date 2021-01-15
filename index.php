@@ -283,9 +283,9 @@ if ( $assn_id != false && $assn_json != null && is_array($our_grades) &&
     return;
 }
 
-$menu = new \Tsugi\UI\MenuSet();
-
+$menu = false;
 if ( $USER->instructor ) {
+    $menu = new \Tsugi\UI\MenuSet();
     if ( $assn_json !== null ) {
         $menu->addLeft('Student Data', 'admin');
     }
