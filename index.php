@@ -128,7 +128,11 @@ if ( $assn_id != false && $assn_json != null &&
                 return;
             }
 
-            $blob_id = BlobUtil::uploadToBlob($fdes);
+            // Indicate this is not really used yet in case the submission is not saved
+            // We update this by calling setBackref after the submission is complete
+            $backref = "{$p}peer_submit::submit_id::-1";
+            $SAFETY_CHECK=true;
+            $blob_id = BlobUtil::uploadToBlob($fdes, $SAFETY_CHECK, $backref);
             if ( $blob_id === false ) {
                 $_SESSION['error'] = 'Problem storing file in server: '.$filename;
                 header( 'Location: '.addSession('index') ) ;
@@ -209,8 +213,15 @@ if ( $assn_id != false && $assn_json != null &&
             ':UID' => $USER->id)
     );
 
+
     Cache::clear('peer_submit');
     if ( $stmt->success ) {
+        $submit_id = $PDOX->lastInsertId();
+        // Mark our blobs as belonging to this submission
+        $backref = "{$p}peer_submit::submit_id::".$submit_id;
+        foreach($blob_ids as $file_id ) {
+            BlobUtil::setBackref($file_id, $backref);
+        }
         $_SESSION['success'] = 'Assignment submitted';
         header( 'Location: '.addSession('index') ) ;
     } else {
