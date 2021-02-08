@@ -242,7 +242,7 @@ Points for doing an Assessment
     </p>
     <p>
      <span data-toggle="tooltip" title="This is the minimum number of peer submissions each student must assess. If you set Points for Peer Assessment to zero and this field to something greater than zero, students will be able to comment on their peer submissions but not assign any points.">
-Minimum Peer Assemments Required
+Minimum Peer Assessments Required
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
       <input type="text" name="minassess" id="minassess"
         value="<?= htmlentities(U::get($jsonObj,'minassess')) ?>"
