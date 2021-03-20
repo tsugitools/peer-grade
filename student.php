@@ -176,14 +176,16 @@ if ( isset($_POST['resendSubmit']) ) {
     return;
 }
 
-// Retrieve our grades...
+// Retrieve received grades and grades that have been
 $grades_received = retrieveSubmissionGrades($submit_id);
+$grades_given = retrieveGradesGiven($assn_id, $user_id);
+$peer_marks = retrievePeerMarks($assn_id, $user_id);
 
 // Handle incoming post to delete a grade entry
 if ( isset($_POST['grade_id']) && isset($_POST['deleteGrade']) ) {
     // Make sure this is deleting a legit grading entry...
     $found = false;
-    if ( $grades_received != false ) foreach ( $grades_received as $grade ) {
+    if ( $grades_given != false ) foreach ( $grades_given as $grade ) {
         if ($_POST['grade_id'] == $grade['grade_id'] ) $found = true;
     }
     if ( ! $found ) {
@@ -244,10 +246,6 @@ if ( isset($_POST['flag_id']) && isset($_POST['deleteFlag']) ) {
     header( 'Location: '.addSession($studenturl) ) ;
     return;
 }
-
-// Retrieve the grades that we have given
-$grades_given = retrieveGradesGiven($assn_id, $user_id);
-$peer_marks = retrievePeerMarks($assn_id, $user_id);
 
 // Retrieve the next and previous users for paging
 $sql = "(SELECT user_id, inst_points FROM ${p}peer_submit 
