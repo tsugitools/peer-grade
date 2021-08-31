@@ -33,6 +33,7 @@ if ( isset($_POST['save_settings']) ) {
     "title" => U::get($_POST, 'title'),
     "description" => U::get($_POST, 'description'),
     "grading" => U::get($_POST, 'grading'),
+    "assignment" => U::get($_POST, 'assignment'),
     "parts" => $partsArray,
     "gallery" => U::get($_POST, 'gallery'),
     "totalpoints" => U::get($_POST, 'totalpoints'),
@@ -196,6 +197,13 @@ Description of assignment shown to students.  This can be edited at any time - e
 </textarea>
     </p>
     <p>
+<span data-toggle="tooltip" title="
+Assignment specification URL (optional)
+">Assignment Specification <i class="fa fa-question-circle-o" aria-hidden="true"></i></span><br/>
+      <input type="text" name="assignment"
+        value="<?= htmlentities(U::get($jsonObj,'assignment')) ?>"
+        style="width:90%"/>
+    </p>
 <span data-toggle="tooltip" title="Description of how the assignment will be/should be graded.
 This can be edited at any time - even after the assignment has started.
 ">Grading Expectations
