@@ -93,6 +93,7 @@ function loadSubmission($assn_id, $user_id)
 // Upgrade a submission to cope with name changes
 function upgradeSubmission($json_str)
 {
+    global $CFG;
     if ( strlen(trim($json_str)) < 1 ) return $json_str;
     $json = json_decode($json_str);
     if ( $json === null ) return $json_str;
@@ -120,6 +121,11 @@ function upgradeSubmission($json_str)
     if ( ! isset($json->notepublic) ) $json->notepublic = "false";
     if ( ! isset($json->image_size) ) $json->image_size = 1;
     if ( ! isset($json->pdf_size) ) $json->pdf_size = 0; // Max
+
+    // Fix urls
+    if ( isset($json->assignment) && is_string($json->assignment) && ! empty($json->assignment) ) {
+        $json->assignment = str_replace('{apphome}', $CFG->apphome, $json->assignment);
+    }
     return json_encode($json);
 }
 
