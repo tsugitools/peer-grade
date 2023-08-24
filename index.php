@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && count($_POST) < 1 ) {
 $row = loadAssignment();
 $assn_json = null;
 $assn_id = false;
-if ( $row !== false && strlen($row['json']) > 0 ) {
+if ( $row !== false && !empty($row['json']) ) {
     $assn_json = json_decode(upgradeSubmission($row['json']));
     $assn_id = $row['assn_id'];
 }
@@ -158,7 +158,7 @@ if ( $assn_id != false && $assn_json != null &&
             $content_items[] = $content_data;
         } else if ( $part->type == 'code' ) {
             $code = $_POST['input_code_'.$partno];
-            if( strlen($code) < 1 ) {
+            if( empty($code) ) {
                 $_SESSION['error'] = 'Missing: '.$part->title;
                 header( 'Location: '.addSession('index') ) ;
                 return;
@@ -175,7 +175,7 @@ if ( $assn_id != false && $assn_json != null &&
             $code_ids[] = $PDOX->lastInsertId();
         } else if ( $part->type == 'html' ) {
             $html = $_POST['input_html_'.$partno];
-            if( strlen($html) < 1 ) {
+            if( empty($html) ) {
                 $_SESSION['error'] = 'Missing: '.$part->title;
                 header( 'Location: '.addSession('index') ) ;
                 return;
@@ -570,7 +570,7 @@ if ( $submit_row['inst_points'] > 0 ) {
     echo("<p>Instructor grade on assignment: ". $submit_row['inst_points']."</p>\n");
 }
 
-if ( strlen($submit_row['inst_note']) > 0 ) {
+if ( !empty($submit_row['inst_note']) ) {
     echo("<p>Instructor Note:<br/>");
     echo(htmlent_utf8($submit_row['inst_note']));
     echo("</p>\n");

@@ -107,7 +107,7 @@ $json = "";
 if ( $row !== false ) $json = $row['json'];
 
 // Clean up the JSON for presentation
-if ( strlen($json) < 1 ) $json = getDefaultJson();
+if ( empty($json) ) $json = getDefaultJson();
 $json = LTI::jsonIndent($json);
 $jsonObj = json_decode(upgradeSubmission($json),true);
 
@@ -184,7 +184,7 @@ Description of assignment shown to students.  This can be edited
 at any time - even after the assignment has started.
 ">Assignment Title <i class="fa fa-question-circle-o" aria-hidden="true"></i></span><br/>
       <input type="text" name="title"
-        value="<?= htmlentities(U::get($jsonObj,'title')) ?>"
+        value="<?= htmlentities(U::get($jsonObj,'title') ?? '') ?>"
         style="width:90%"/>
     </p>
     <p>
@@ -193,7 +193,7 @@ Description of assignment shown to students.  This can be edited at any time - e
 ">Assignment Description
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span><br/>
 <textarea name="description" style="width:90%">
-<?= htmlentities(U::get($jsonObj,'description')) ?>
+<?= htmlentities(U::get($jsonObj,'description') ?? '') ?>
 </textarea>
     </p>
     <p>
@@ -201,7 +201,7 @@ Description of assignment shown to students.  This can be edited at any time - e
 Assignment specification URL (optional)
 ">Assignment Specification <i class="fa fa-question-circle-o" aria-hidden="true"></i></span><br/>
       <input type="text" name="assignment"
-        value="<?= htmlentities(U::get($jsonObj,'assignment')) ?>"
+        value="<?= htmlentities(U::get($jsonObj,'assignment') ?? '') ?>"
         style="width:90%"/>
     </p>
 <span data-toggle="tooltip" title="Description of how the assignment will be/should be graded.
@@ -209,7 +209,7 @@ This can be edited at any time - even after the assignment has started.
 ">Grading Expectations
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span><br/>
 <textarea name="grading" style="width:90%">
-<?= htmlentities(U::get($jsonObj,'grading')) ?>
+<?= htmlentities(U::get($jsonObj,'grading') ?? ' ') ?>
 </textarea>
     </p>
 <div class="fieldset">
@@ -226,7 +226,7 @@ you might want to set all of these points to zero.
 Points from Peers
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
       <input type="number" name="peerpoints"
-        value="<?= htmlentities(U::get($jsonObj,'peerpoints')) ?>"
+        value="<?= htmlentities(U::get($jsonObj,'peerpoints') ?? '') ?>"
         required/>
 <i class="fa fa-asterisk" aria-hidden="true"></i>
     </p>
@@ -235,7 +235,7 @@ Points from Peers
 Instructor Points
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
       <input type="number" name="instructorpoints"
-        value="<?= htmlentities(U::get($jsonObj,'instructorpoints')) ?>"
+        value="<?= htmlentities(U::get($jsonObj,'instructorpoints') ?? '') ?>"
       required/>
 <i class="fa fa-asterisk" aria-hidden="true"></i>
     </p>
@@ -244,7 +244,7 @@ Instructor Points
 Points for doing an Assessment
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
       <input type="number" name="assesspoints"
-        value="<?= htmlentities(U::get($jsonObj,'assesspoints')) ?>"
+        value="<?= htmlentities(U::get($jsonObj,'assesspoints') ?? '') ?>"
         required/>
 <i class="fa fa-asterisk" aria-hidden="true"></i>
     </p>
@@ -253,7 +253,7 @@ Points for doing an Assessment
 Minimum Peer Assessments Required
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
       <input type="text" name="minassess" id="minassess"
-        value="<?= htmlentities(U::get($jsonObj,'minassess')) ?>"
+        value="<?= htmlentities(U::get($jsonObj,'minassess') ?? '') ?>"
  required>
 <i class="fa fa-asterisk" aria-hidden="true"></i>
     </p>
@@ -262,7 +262,7 @@ Minimum Peer Assessments Required
 Maximum Peer Assessments Allowed
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
       <input type="number" name="maxassess" id="maxassess"
-        value="<?= htmlentities(U::get($jsonObj,'maxassess')) ?>"
+        value="<?= htmlentities(U::get($jsonObj,'maxassess') ?? '') ?>"
  required>
     </p>
 <p>
@@ -309,7 +309,7 @@ The student needs to view their submission or a batch process has to run to trig
 Automatic Peer Grading Interval
 <i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
       <input type="number" name="autopeer"
-        value="<?= htmlentities(U::get($jsonObj,'autopeer')) ?>"
+        value="<?= htmlentities(U::get($jsonObj,'autopeer') ?? '') ?>"
         required/>
     </p>
 <p>
@@ -320,12 +320,12 @@ lower limits per artifact if you like.
 <p>
 Maximum image size (MB)
       <input type="number" name="image_size"
-        value="<?= htmlentities(U::get($jsonObj,'image_size')) ?>" />
+        value="<?= htmlentities(U::get($jsonObj,'image_size') ?? '') ?>" />
     </p>
 <p>
 Maximum PDF size (MB)
       <input type="number" name="pdf_size"
-        value="<?= htmlentities(U::get($jsonObj,'pdf_size')) ?>" />
+        value="<?= htmlentities(U::get($jsonObj,'pdf_size') ?? '') ?>" />
     </p>
 </div>
 <div class="fieldset">

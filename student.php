@@ -101,7 +101,7 @@ if ( isset($_POST['instSubmit']) || isset($_POST['instSubmitAdvance']) ) {
 
     // Check the legit options here
     $points = isset($_POST['inst_points']) ? trim($_POST['inst_points']) : null;
-    if ( strlen($points) == 0 || $points === null ) {
+    if ( empty($points) ) {
         $points = null;
     } else if ( is_numeric($points) ) {
         $points = $points + 0;
@@ -121,11 +121,11 @@ if ( isset($_POST['instSubmit']) || isset($_POST['instSubmitAdvance']) ) {
     }
 
     $stmt = $PDOX->queryDie(
-        "UPDATE {$p}peer_submit SET 
+        "UPDATE {$p}peer_submit SET
             inst_points = :IP, inst_note = :IN
             WHERE submit_id = :SID",
-        array( ':IP' => $points, 
-            ':IN' => $_POST['inst_note'], 
+        array( ':IP' => $points,
+            ':IN' => $_POST['inst_note'],
             ':SID' => $submit_id)
     );
     Cache::clear('peer_grade');
@@ -248,23 +248,23 @@ if ( isset($_POST['flag_id']) && isset($_POST['deleteFlag']) ) {
 }
 
 // Retrieve the next and previous users for paging
-$sql = "(SELECT user_id, inst_points FROM ${p}peer_submit 
+$sql = "(SELECT user_id, inst_points FROM {$p}peer_submit
         WHERE user_id < :UID AND assn_id = :AID ORDER BY user_id DESC LIMIT 1)
-    UNION (SELECT user_id, inst_points FROM ${p}peer_submit 
+    UNION (SELECT user_id, inst_points FROM {$p}peer_submit
         WHERE user_id > :UID AND assn_id = :AID ORDER BY user_id ASC LIMIT 1)";
-$rows = $PDOX->allRowsDie($sql, 
+$rows = $PDOX->allRowsDie($sql,
     array(":UID" => $user_id, ":AID" => $assn_id)
 );
 
 // Retrieve ungraded rows in a circular manner
 $ungraded_rows = false;
 if ( $assn_json->instructorpoints > 0 ) {
-    $ungraded_sql = "(SELECT user_id, inst_points FROM ${p}peer_submit 
+    $ungraded_sql = "(SELECT user_id, inst_points FROM {$p}peer_submit
         WHERE user_id > :UID AND assn_id = :AID AND inst_points IS NULL ORDER BY user_id ASC LIMIT 1)
-    UNION (SELECT user_id, inst_points FROM ${p}peer_submit 
+    UNION (SELECT user_id, inst_points FROM {$p}peer_submit
         WHERE user_id != :UID AND assn_id = :AID AND inst_points IS NULL ORDER BY user_id ASC LIMIT 1)
     ";
-    $ungraded_rows = $PDOX->allRowsDie($ungraded_sql, 
+    $ungraded_rows = $PDOX->allRowsDie($ungraded_sql,
         array(":UID" => $user_id, ":AID" => $assn_id)
     );
 }
@@ -298,32 +298,32 @@ echo('<div style="float:right">');
 if ( $prev_user_id !== false ) {
     $studenturl = Table::makeUrl('student.php', $getparms, Array("user_id" => $prev_user_id));
     echo('<button class="btn btn-normal"
-        title="Students are ordered by user_id" 
-        onclick="location=\''.addSession($studenturl).'\'; 
+        title="Students are ordered by user_id"
+        onclick="location=\''.addSession($studenturl).'\';
         return false">Previous Student</button> ');
 } else {
-    echo('<button class="btn btn-normal" 
-        title="Students are ordered by user_id" 
+    echo('<button class="btn btn-normal"
+        title="Students are ordered by user_id"
         disabled="disabled">Previous Student</button> ');
 }
 
 if ( $next_user_id !== false ) {
     $studenturl = Table::makeUrl('student.php', $getparms, Array("user_id" => $next_user_id));
-    echo('<button class="btn btn-normal" 
-        title="Students are ordered by user_id" 
-        onclick="location=\''.addSession($studenturl).'\'; 
+    echo('<button class="btn btn-normal"
+        title="Students are ordered by user_id"
+        onclick="location=\''.addSession($studenturl).'\';
         return false">Next Student</button> ');
 } else {
-    echo('<button class="btn btn-normal" 
-        title="Students are ordered by user_id" 
+    echo('<button class="btn btn-normal"
+        title="Students are ordered by user_id"
         disabled="disabled">Next Student</button> ');
 }
 
 if ( $next_user_id_ungraded !== false ) {
     $studenturl = Table::makeUrl('student.php', $getparms, Array("user_id" => $next_user_id_ungraded));
-    echo('<button class="btn btn-normal" 
-        title="At the end of ungraded students this goes back to the first ungraded student." 
-        onclick="location=\''.addSession($studenturl).'\'; 
+    echo('<button class="btn btn-normal"
+        title="At the end of ungraded students this goes back to the first ungraded student."
+        onclick="location=\''.addSession($studenturl).'\';
         return false">Next Ungraded Student</button> ');
 } else if ( $assn_json->instructorpoints > 0 ) {
     echo('<button class="btn btn-normal" i

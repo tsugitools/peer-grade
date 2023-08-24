@@ -35,7 +35,7 @@ function loadAssignment()
         }
     }
 
-    if ( ( ! $custom || strlen($custom) < 1 ) && isset($_GET["inherit"]) && isset($CFG->lessons) ) {
+    if ( ( ! $custom || empty($custom) ) && isset($_GET["inherit"]) && isset($CFG->lessons) ) {
         $l = new Lessons($CFG->lessons);
         if ( $l ) {
             $lti = $l->getLtiByRlid($_GET['inherit']);
@@ -94,7 +94,7 @@ function loadSubmission($assn_id, $user_id)
 function upgradeSubmission($json_str)
 {
     global $CFG;
-    if ( strlen(trim($json_str)) < 1 ) return $json_str;
+    if ( empty(trim($json_str)) ) return $json_str;
     $json = json_decode($json_str);
     if ( $json === null ) return $json_str;
 
@@ -172,7 +172,7 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
             if ( is_array($blob_id) ) $blob_id = $blob_id[0];
             $url = BlobUtil::getAccessUrlForBlob($blob_id);
             $title = 'Student image';
-            if( isset($part->title) && strlen($part->title) > 0 ) $title = $part->title;
+            if( isset($part->title) && !empty($part->title) ) $title = $part->title;
             echo (' <a href="#" onclick="$(\'#myModal_'.$blob_id.'\').modal();"');
             echo ('alt="'.htmlent_utf8($title).'" title="'.htmlent_utf8($title).'">');
             echo ('<img src="'.addSession($url).'" width="240" style="max-width: 100%"></a>'."\n");
@@ -196,7 +196,7 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
             if ( is_array($blob_id) ) $blob_id = $blob_id[0];
             $url = BlobUtil::getAccessUrlForBlob($blob_id);
             $title = 'Student PDF';
-            if( isset($part->title) && strlen($part->title) > 0 ) $title = $part->title;
+            if( isset($part->title) && !empty($part->title) ) $title = $part->title;
             // Need session because target="_blank"
             echo ('<p><a href="'.addSession(safe_href($url)).'" target="_blank">');
             echo (htmlentities($title).'</a> (Will launch in new window)</p>'."\n");
@@ -242,7 +242,7 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
                     ":UID" => $user_id)
             );
             $json_url = addSession("load_html.php?html_id=$html_id&user_id=$user_id");
-            if ( $row === FALSE || strlen($row['data']) < 1 ) {
+            if ( $row === FALSE || empty($row['data']) ) {
                 echo("<p>No HTML Found</p>\n");
             } else {
                 echo ('<p>HTML: <a href="#" onclick="$(\'#myModal_html_'.$htmlno.'\').modal();">');
@@ -275,7 +275,7 @@ html_loads.push(['html_content_<?php echo($htmlno); ?>', '<?= $json_url ?>']);
                     ":AID" => $assn_id,
                     ":UID" => $user_id)
             );
-            if ( $row === FALSE || strlen($row['data']) < 1 ) {
+            if ( $row === FALSE || empty($row['data']) ) {
                 echo("<p>No Code Found</p>\n");
             } else {
                 echo ('<p>Code: <a href="#" onclick="$(\'#myModal_code_'.$codeno.'\').modal();">');
@@ -365,7 +365,7 @@ function computeGrade($assn_id, $assn_json, $user_id)
 
     $submit_json_str = $row['json'];
     $submit_json = false;
-    if ( strlen($submit_json_str) > 0 ) {
+    if ( !empty($submit_json_str) ) {
         $submit_json = json_decode($submit_json_str);
     }
 
@@ -509,7 +509,7 @@ function mailDeleteSubmit($user_id, $assn_json, $note)
     $user_row = User::loadUserInfoBypass($user_id);
     if ( $user_row === false ) return false;
     $to = $user_row['email'];
-    if ( strlen($to) < 1 || strpos($to,'@') === false ) return false;
+    if ( empty($to) || strpos($to,'@') === false ) return false;
 
     $name = $user_row['displayname'];
     $token = Mail::computeCheck($user_id);
@@ -523,7 +523,7 @@ function mailDeleteSubmit($user_id, $assn_json, $note)
     // if ( isset($USER->displayname) ) $message .= 'Staff member doing reset: '.$USER->displayname.$E;
 
     $fixnote = trim($note);
-    if ( strlen($fixnote) > 0 ) {
+    if ( !empty($fixnote) ) {
         if ( $E != "\n" ) $fixnote = str_replace("\n",$E,$fixnote);
         $message .= "Notes regarding this action:".$E.$fixnote.$E;
     }
@@ -610,7 +610,7 @@ function deleteSubmission($assn_row, $submit_row) {
     $submit_id = $submit_row['submit_id'];
 
     $json = isset($submit_row['json']) ? $submit_row['json'] : false;
-    if ( $json && strlen($json) > 0 ) $json = json_decode($json);
+    if ( $json && !empty($json) ) $json = json_decode($json);
 
     if ( $json ) $blob_ids = isset($json->blob_ids) ? $json->blob_ids : false;
     if ( is_array($blob_ids) ) {

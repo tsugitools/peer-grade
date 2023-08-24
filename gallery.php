@@ -14,7 +14,7 @@ $p = $CFG->dbprefix;
 $row = loadAssignment();
 $assn_json = null;
 $assn_id = false;
-if ( $row !== false && strlen($row['json']) > 0 ) {
+if ( $row !== false && !empty($row['json']) ) {
     $assn_json = json_decode(upgradeSubmission($row['json']));
     $assn_id = $row['assn_id'];
 }
@@ -131,7 +131,7 @@ if ( $assn_json->galleryformat == 'table' ) {
         $submit_json = json_decode($row['json']);
         $newrow['user_id'] = $row['user_id'];
         $note = $submit_json->notes;
-        if ( strlen($note) < 1 ) $note = "Note missing.";
+        if ( empty($note) ) $note = "Note missing.";
         if ( strlen($note) > 200 ) {
             $note = substr($note, 0, 200);
         }
@@ -171,7 +171,7 @@ foreach($rows as $row ) {
     if ( count($submit_json->blob_ids) > 0 ) $more = true;
     if ( (count($submit_json->content_items) + count($submit_json->urls)) > 1 ) $more = true;
     $note = $submit_json->notes;
-    if ( strlen($note) < 1 ) $note = "Note missing.";
+    if ( empty($note) ) $note = "Note missing.";
     if ( strlen($note) > 200 ) {
         $note = substr($note, 0, 200);
         $more = true;
