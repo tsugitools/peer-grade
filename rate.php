@@ -108,7 +108,7 @@ if ( isset($_POST['rating']) && isset($_POST['submit_id'])
         return;
     }
 
-    if ( empty($_POST['rating']) ) {
+    if ( U::isEmpty($_POST['rating']) ) {
         $_SESSION['error'] = 'Rating is required';
         header( 'Location: '.addSession($url_stay.'?user_id='.$user_id) ) ;
         return;

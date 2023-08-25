@@ -107,7 +107,7 @@ $json = "";
 if ( $row !== false ) $json = $row['json'];
 
 // Clean up the JSON for presentation
-if ( empty($json) ) $json = getDefaultJson();
+if ( U::isEmpty($json) ) $json = getDefaultJson();
 $json = LTI::jsonIndent($json);
 $jsonObj = json_decode(upgradeSubmission($json),true);
 

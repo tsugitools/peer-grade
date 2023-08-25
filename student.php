@@ -101,7 +101,7 @@ if ( isset($_POST['instSubmit']) || isset($_POST['instSubmitAdvance']) ) {
 
     // Check the legit options here
     $points = isset($_POST['inst_points']) ? trim($_POST['inst_points']) : null;
-    if ( empty($points) ) {
+    if ( U::isEmpty($points) ) {
         $points = null;
     } else if ( is_numeric($points) ) {
         $points = $points + 0;
