@@ -303,6 +303,8 @@ if ( $USER->instructor ) {
     $submenu = new \Tsugi\UI\Menu();
     $submenu->addLink('Settings', '#', /* push */ false, SettingsForm::attr());
     $submenu->addLink('Configure', 'configure');
+    $submenu->addLink('Send Grade', 'sendgrade.php');
+
     if ( $CFG->launchactivity ) {
         $submenu->addLink('Analytics', 'analytics');
     }
