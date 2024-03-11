@@ -152,7 +152,7 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
 {
     global $CFG, $PDOX, $USER, $LINK, $CONTEXT, $OUTPUT;
     echo('<div style="padding:5px">');
-    $blob_ids = $submit_json->blob_ids;
+    $blob_ids = isset($submit_json->blob_ids) ? $submit_json->blob_ids : array();
     $urls = isset($submit_json->urls) ? $submit_json->urls : array();
     $codes = isset($submit_json->codes) ? $submit_json->codes : array();
     $htmls = isset($submit_json->htmls) ? $submit_json->htmls : array();
@@ -312,7 +312,7 @@ class="language-<?php echo($part->language); ?>"
         echo("<p>Click on each image/pdf to see a larger view of the image.</p>\n");
     }
 
-    if ( strlen($submit_json->notes) > 1 ) {
+    if ( isset($submit_json->notes) && is_string($submit_json->notes) && strlen($submit_json->notes) > 1 ) {
         echo("<p>Notes: ".htmlent_utf8($submit_json->notes)."</p>\n");
     }
     echo('<div style="padding:3px">');
