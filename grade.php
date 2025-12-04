@@ -197,10 +197,10 @@ echo("<p><b>Please be careful, you cannot revise grades after you submit them.</
 
 echo('<div style="border: 1px solid black; padding:3px">');
 echo("<p><h4>".$assn_json->title."</h4></p>\n");
-echo('<p>'.htmlent_utf8($assn_json->description)."</p>\n");
+echo('<p>'.htmlentities($assn_json->description)."</p>\n");
 echo('</div>');
 showSubmission($assn_json, $submit_json, $assn_id, $user_id);
-echo('<p>'.htmlent_utf8($assn_json->grading)."</p>\n");
+echo('<p>'.htmlentities($assn_json->grading)."</p>\n");
 ?>
 <form method="post">
 <input type="hidden" value="<?php echo($submit_id); ?>" name="submit_id">

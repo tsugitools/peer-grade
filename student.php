@@ -335,8 +335,8 @@ echo('<input type="submit" name="doExit" class="btn btn-success"
 echo("</div>");
 
 if ( $user_row != false ) {
-    $user_display = htmlent_utf8($user_row['displayname'])." (".htmlent_utf8($user_row['email']).")";
-    echo("<p><b>Grade record for: ".htmlent_utf8($user_row['displayname'])."</b></p>\n");
+    $user_display = htmlentities($user_row['displayname'])." (".htmlentities($user_row['email']).")";
+    echo("<p><b>Grade record for: ".htmlentities($user_row['displayname'])."</b></p>\n");
 }
 echo('<br clear="all"/>');
 
@@ -370,7 +370,7 @@ if ( $assn_json->instructorpoints > 0 ) {
 
 echo('<label for="inst_note">Instructor Note To Student</label><br/>
       <textarea name="inst_note" id="inst_note" style="width:60%" rows="5">');
-echo(htmlent_utf8($submit_row['inst_note']));
+echo(htmlentities($submit_row['inst_note']));
 echo('</textarea><br/>
       <input type="submit" name="instSubmit" value="Update" class="btn btn-primary">');
 
@@ -435,10 +435,10 @@ if ( $our_flags !== false && count($our_flags) > 0 ) {
     echo("\n<th>Flagged By</th><th>Email</th><th>Comment</th><th>Time</th><th>Action</th></tr>");
     foreach ( $our_flags as $flag ) {
         echo("\n<tr>");
-        echo("<td>".htmlent_utf8($flag['displayname'])."</td>\n");
-        echo("<td>".htmlent_utf8($flag['email'])."</td>\n");
-        echo("<td>".htmlent_utf8($flag['note'])."</td>\n");
-        echo("<td>".htmlent_utf8($flag['updated_at'])."</td>\n");
+        echo("<td>".htmlentities($flag['displayname'])."</td>\n");
+        echo("<td>".htmlentities($flag['email'])."</td>\n");
+        echo("<td>".htmlentities($flag['note'])."</td>\n");
+        echo("<td>".htmlentities($flag['updated_at'])."</td>\n");
         echo('<td> <form method="post"><input type="hidden"
             name="flag_id" value="'.$flag['flag_id'].'">
         <input type="submit" name="deleteFlag" value="delete" class="btn btn-danger"></form></td>');
@@ -461,11 +461,11 @@ if ( $grades_received === false || count($grades_received) < 1 ) {
 
     foreach ( $grades_received as $grade ) {
         echo("<tr>
-        <td>".htmlent_utf8($grade['displayname'])."</td>
-        <td>".htmlent_utf8($grade['email'])."</td>");
+        <td>".htmlentities($grade['displayname'])."</td>
+        <td>".htmlentities($grade['email'])."</td>");
         if ( $assn_json->peerpoints > 0 ) echo("<td>".$grade['points']."</td>");
         if ( $assn_json->rating > 0 ) echo("<td>".$grade['rating']."</td>");
-        echo("<td>".htmlent_utf8($grade['note'])."</td>".
+        echo("<td>".htmlentities($grade['note'])."</td>".
         '<td> <form method="post"><input type="hidden"
             name="grade_id" value="'.$grade['grade_id'].'">
         <input type="hidden" name="user_id" value="'.$user_id.'">
@@ -493,11 +493,11 @@ if ( $grades_given === false || count($grades_given) < 1 ) {
 
     foreach ( $grades_given as $grade ) {
         echo("<tr>
-        <td>".htmlent_utf8($grade['displayname'])."</td>
-        <td>".htmlent_utf8($grade['email'])."</td>");
+        <td>".htmlentities($grade['displayname'])."</td>
+        <td>".htmlentities($grade['email'])."</td>");
         if ( $assn_json->peerpoints > 0 ) echo("<td>".$grade['points']."</td>");
         if ( $assn_json->rating > 0 ) echo("<td>".$grade['rating']."</td>");
-        echo("<td>".htmlent_utf8($grade['note'])."</td>".
+        echo("<td>".htmlentities($grade['note'])."</td>".
         '<td> <form method="post"><input type="hidden"
             name="grade_id" value="'.$grade['grade_id'].'">
         <input type="hidden" name="user_id" value="'.$user_id.'">

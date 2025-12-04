@@ -174,7 +174,7 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
             $title = 'Student image';
             if( isset($part->title) && U::isNotEmpty($part->title) ) $title = $part->title;
             echo (' <a href="#" onclick="$(\'#myModal_'.$blob_id.'\').modal();"');
-            echo ('alt="'.htmlent_utf8($title).'" title="'.htmlent_utf8($title).'">');
+            echo ('alt="'.htmlentities($title).'" title="'.htmlentities($title).'">');
             echo ('<img src="'.addSession($url).'" width="240" style="max-width: 100%"></a>'."\n");
 ?>
 <div class="modal fade" id="myModal_<?php echo($blob_id); ?>">
@@ -182,7 +182,7 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title"><?php echo(htmlent_utf8($title)); ?></h4>
+        <h4 class="modal-title"><?php echo(htmlentities($title)); ?></h4>
       </div>
       <div class="modal-body">
         <img src="<?php echo(addSession($url)); ?>" style="width:100%">
@@ -246,14 +246,14 @@ function showSubmission($assn_json, $submit_json, $assn_id, $user_id)
                 echo("<p>No HTML Found</p>\n");
             } else {
                 echo ('<p>HTML: <a href="#" onclick="$(\'#myModal_html_'.$htmlno.'\').modal();">');
-                echo(htmlent_utf8($part->title)."</a> (click to view)</p>\n");
+                echo(htmlentities($part->title)."</a> (click to view)</p>\n");
 ?>
 <div class="modal fade" id="myModal_html_<?php echo($htmlno); ?>">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title"><?php echo(htmlent_utf8($part->title)); ?></h4>
+        <h4 class="modal-title"><?php echo(htmlentities($part->title)); ?></h4>
       </div>
       <div class="modal-body" id="html_content_<?php echo($htmlno); ?>">
             <img src="<?= $OUTPUT->getSpinnerUrl() ?>"/>
@@ -279,14 +279,14 @@ html_loads.push(['html_content_<?php echo($htmlno); ?>', '<?= $json_url ?>']);
                 echo("<p>No Code Found</p>\n");
             } else {
                 echo ('<p>Code: <a href="#" onclick="$(\'#myModal_code_'.$codeno.'\').modal();">');
-                echo(htmlent_utf8($part->title)."</a> (click to view)</p>\n");
+                echo(htmlentities($part->title)."</a> (click to view)</p>\n");
 ?>
 <div class="modal fade" id="myModal_code_<?php echo($codeno); ?>">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title"><?php echo(htmlent_utf8($part->title)); ?></h4>
+        <h4 class="modal-title"><?php echo(htmlentities($part->title)); ?></h4>
       </div>
       <div class="modal-body">
 <!-- Don't indent or inadvertently add a newline once the pre starts -->
@@ -313,7 +313,7 @@ class="language-<?php echo($part->language); ?>"
     }
 
     if ( isset($submit_json->notes) && is_string($submit_json->notes) && strlen($submit_json->notes) > 1 ) {
-        echo("<p>Notes: ".htmlent_utf8($submit_json->notes)."</p>\n");
+        echo("<p>Notes: ".htmlentities($submit_json->notes)."</p>\n");
     }
     echo('<div style="padding:3px">');
 }

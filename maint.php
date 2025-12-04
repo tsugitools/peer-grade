@@ -86,7 +86,7 @@ if ( isset($_POST['reGradePeer']) ) {
         );
 
         if ( $row['grade'] >= $computed_grade ) {
-            echo(htmlent_utf8($row['displayname']).' ('.htmlent_utf8($row['email']).') ');
+            echo(htmlentities($row['displayname']).' ('.htmlentities($row['email']).') ');
             if ( $row['grade'] > $computed_grade ) {
                 echo('grade='.$row['grade'].' computed='.$computed_grade." (unchanged)<br/>\n");
             } else {
@@ -106,7 +106,7 @@ if ( isset($_POST['reGradePeer']) ) {
         // Send the grade to the server
         $status = LTIX::gradeSend($computed_grade, $row); // This is the slow bit
         if ( $status === true ) {
-            echo(htmlent_utf8($row['displayname']).' ('.htmlent_utf8($row['email']).') ');
+            echo(htmlentities($row['displayname']).' ('.htmlentities($row['email']).') ');
             echo("Grade $computed_grade submitted to server<br/>\n");
             $changed++;
         } else {
@@ -181,9 +181,9 @@ next <b>Re-Compute Peer Grades</b> starts from the beginning.
 </ul>
 <pre>
 Context: <?php echo($CONTEXT->id);
-    if ( isset($CONTEXT->title) ) echo(' '.htmlent_utf8($CONTEXT->title)) ; ?>
+    if ( isset($CONTEXT->title) ) echo(' '.htmlentities($CONTEXT->title)) ; ?>
 Link id: <?php echo($link_id);
-    if ( isset($LINK->title) ) echo(' '.htmlent_utf8($LINK->title)) ; ?>
+    if ( isset($LINK->title) ) echo(' '.htmlentities($LINK->title)) ; ?>
 </pre>
 
 <p><b>Remaining Regrades:</b> <span id="total"></span>

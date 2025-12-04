@@ -356,8 +356,8 @@ $OUTPUT->welcomeUserCourse();
 if ( $assn_json != null ) {
     echo('<div style="border: 1px solid black">');
     echo("<p><h4>".$assn_json->title."</h4></p>\n");
-    echo('<p>'.htmlent_utf8($assn_json->description)."</p><p>\n");
-    echo('<p>'.htmlent_utf8($assn_json->grading)."\n");
+    echo('<p>'.htmlentities($assn_json->description)."</p><p>\n");
+    echo('<p>'.htmlentities($assn_json->grading)."\n");
     if ( $assn_json->gallery != 'off' ) {
         echo("<p>This assignment includes a public gallery where you can view all\n");
         echo("student submissions.</p>\n");
@@ -393,7 +393,7 @@ if ( $submit_row == false ) {
     $html_items = array();
     foreach ( $assn_json->parts as $part ) {
         echo("\n<p>");
-        echo(htmlent_utf8($part->title)."\n");
+        echo(htmlentities($part->title)."\n");
         if ( $part->type == "image" ) {
             $image_count++;
             echo('<input name="uploaded_file_'.$partno.'" data-max-size="'.$image_max.'"
@@ -470,7 +470,7 @@ if ( $submit_row == false ) {
     if ( $image_count > 0 ) {
         $upload_max_size = ini_get('upload_max_filesize');
         echo("\n<p>Make sure each uploaded image file is smaller than 1M.  Total upload size limited to ");
-        echo(htmlent_utf8($upload_max_size)."</p>\n");
+        echo(htmlentities($upload_max_size)."</p>\n");
     }
     if ( isset($assn_json->totalpoints) && $assn_json->totalpoints > 0 ) {
         echo("<p>");
@@ -574,7 +574,7 @@ if ( $submit_row['inst_points'] > 0 ) {
 
 if ( U::isNotEmpty($submit_row['inst_note']) ) {
     echo("<p>Instructor Note:<br/>");
-    echo(htmlent_utf8($submit_row['inst_note']));
+    echo(htmlentities($submit_row['inst_note']));
     echo("</p>\n");
 }
 
@@ -598,7 +598,7 @@ if ( $assn_json->maxassess < 1 ) {
             if ( $show < $max_points ) $show = '';
             echo("<tr><td>".$show."</td>");
         }
-        echo("<td>".htmlent_utf8($grade['note'])."</td>\n");
+        echo("<td>".htmlentities($grade['note'])."</td>\n");
 
         if ( $assn_json->flag ) echo(
             '<td><form><input type="submit" name="showFlag" value="Flag"'.
