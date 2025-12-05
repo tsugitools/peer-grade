@@ -294,7 +294,7 @@ html_loads.push(['html_content_<?php echo($htmlno); ?>', '<?= $json_url ?>']);
 <?php if ( isset($part->language) ) { ?>
 class="language-<?php echo($part->language); ?>"
 <?php } ?>
-><?php echo (htmlentities($row['data'])); ?>
+><?php echo (htmlentities($row['data'] ?? '')); ?>
 </code>
 </pre>
       </div>

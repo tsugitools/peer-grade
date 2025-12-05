@@ -86,7 +86,7 @@ if ( isset($_POST['reGradePeer']) ) {
         );
 
         if ( $row['grade'] >= $computed_grade ) {
-            echo(htmlentities($row['displayname']).' ('.htmlentities($row['email']).') ');
+            echo(htmlentities($row['displayname'] ?? '').' ('.htmlentities($row['email'] ?? '').') ');
             if ( $row['grade'] > $computed_grade ) {
                 echo('grade='.$row['grade'].' computed='.$computed_grade." (unchanged)<br/>\n");
             } else {
@@ -106,7 +106,7 @@ if ( isset($_POST['reGradePeer']) ) {
         // Send the grade to the server
         $status = LTIX::gradeSend($computed_grade, $row); // This is the slow bit
         if ( $status === true ) {
-            echo(htmlentities($row['displayname']).' ('.htmlentities($row['email']).') ');
+            echo(htmlentities($row['displayname'] ?? '').' ('.htmlentities($row['email'] ?? '').') ');
             echo("Grade $computed_grade submitted to server<br/>\n");
             $changed++;
         } else {

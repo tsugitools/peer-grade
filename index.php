@@ -574,7 +574,7 @@ if ( $submit_row['inst_points'] > 0 ) {
 
 if ( U::isNotEmpty($submit_row['inst_note']) ) {
     echo("<p>Instructor Note:<br/>");
-    echo(htmlentities($submit_row['inst_note']));
+    echo(htmlentities($submit_row['inst_note'] ?? ''));
     echo("</p>\n");
 }
 
@@ -598,7 +598,7 @@ if ( $assn_json->maxassess < 1 ) {
             if ( $show < $max_points ) $show = '';
             echo("<tr><td>".$show."</td>");
         }
-        echo("<td>".htmlentities($grade['note'])."</td>\n");
+        echo("<td>".htmlentities($grade['note'] ?? '')."</td>\n");
 
         if ( $assn_json->flag ) echo(
             '<td><form><input type="submit" name="showFlag" value="Flag"'.
