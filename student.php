@@ -370,7 +370,7 @@ if ( $assn_json->instructorpoints > 0 ) {
 
 echo('<label for="inst_note">Instructor Note To Student</label><br/>
       <textarea name="inst_note" id="inst_note" style="width:60%" rows="5">');
-echo(htmlentities($submit_row['inst_note']));
+echo(htmlentities($submit_row['inst_note'] ?? ''));
 echo('</textarea><br/>
       <input type="submit" name="instSubmit" value="Update" class="btn btn-primary">');
 
