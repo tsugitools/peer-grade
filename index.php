@@ -396,9 +396,16 @@ if ( $submit_row == false ) {
         echo(htmlentities($part->title)."\n");
         if ( $part->type == "image" ) {
             $image_count++;
-            echo('<input name="uploaded_file_'.$partno.'" data-max-size="'.$image_max.'"
-                accept="image/png, image/jpg"
-                type="file" class="tsugi_image"> (Please use PNG or JPG files '.$image_max_text.' max)</p>');
+            echo('<div class="image-upload-container" style="margin: 10px 0;">');
+            echo('<input name="uploaded_file_'.$partno.'" id="uploaded_file_'.$partno.'" data-max-size="'.$image_max.'"
+                accept="image/png, image/jpeg, image/jpg"
+                type="file" class="tsugi_image" data-partno="'.$partno.'">');
+            echo('<div id="image_preview_'.$partno.'" style="margin-top: 10px; display: none;">');
+            echo('<img id="preview_img_'.$partno.'" src="" alt="Preview" style="max-width: 300px; max-height: 300px; border: 2px solid #007bff; border-radius: 4px; padding: 5px; background: #f8f9fa; display: block;">');
+            echo('<div id="preview_info_'.$partno.'" style="margin-top: 8px; font-size: 0.9em; padding: 5px; background: #e9ecef; border-radius: 3px;"></div>');
+            echo('</div>');
+            echo('</div>');
+            echo('<p>(PNG or JPG files will be resized to be < 1MB)</p>');
         } else if ( $part->type == "pdf" ) {
             $image_count++;
             echo('<input name="uploaded_file_'.$partno.'" data-max-size="'.$pdf_max.'"
@@ -469,7 +476,7 @@ if ( $submit_row == false ) {
 
     if ( $image_count > 0 ) {
         $upload_max_size = ini_get('upload_max_filesize');
-        echo("\n<p>Make sure each uploaded image file is smaller than 1M.  Total upload size limited to ");
+        echo("\n<p>Total upload size limited to ");
         echo(htmlentities($upload_max_size)."</p>\n");
     }
     if ( isset($assn_json->totalpoints) && $assn_json->totalpoints > 0 ) {
@@ -484,6 +491,202 @@ if ( $submit_row == false ) {
 tsugiCheckFileMaxSize();
 
 $('.basicltiDebugToggle').hide();
+
+// Image resizing and preview functionality
+(function() {
+    const MAX_SIZE = 950 * 1024; // 950KB in bytes (target size, UI shows < 1MB)
+    const MAX_PREVIEW_SIZE = 300; // Max preview dimensions
+    
+    // Function to resize image and convert PNG to JPG if needed
+    // Always outputs JPEG format
+    function resizeImage(file, maxSizeBytes, callback) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const originalWidth = img.width;
+                const originalHeight = img.height;
+                
+                // Start with original dimensions
+                let resizeWidth = originalWidth;
+                let resizeHeight = originalHeight;
+                let quality = 0.92; // Start with high quality
+                let attempts = 0;
+                const maxAttempts = 20; // Prevent infinite loops
+                
+                // Function to try compressing
+                function tryCompress() {
+                    attempts++;
+                    if (attempts > maxAttempts) {
+                        callback(null, 'Unable to compress image below size limit');
+                        return;
+                    }
+                    
+                    canvas.width = resizeWidth;
+                    canvas.height = resizeHeight;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Use high-quality image rendering
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    
+                    ctx.drawImage(img, 0, 0, resizeWidth, resizeHeight);
+                    
+                    canvas.toBlob(function(compressedBlob) {
+                        if (!compressedBlob) {
+                            callback(null, 'Failed to compress image');
+                            return;
+                        }
+                        
+                        // If still too large, reduce size further
+                        if (compressedBlob.size > maxSizeBytes) {
+                            if (quality > 0.3) {
+                                // First try reducing quality
+                                quality -= 0.1;
+                            } else {
+                                // Then reduce dimensions more aggressively
+                                resizeWidth = Math.floor(resizeWidth * 0.85);
+                                resizeHeight = Math.floor(resizeHeight * 0.85);
+                                quality = 0.85; // Reset quality for new dimensions
+                            }
+                            
+                            // Ensure minimum dimensions
+                            if (resizeWidth < 100 || resizeHeight < 100) {
+                                callback(null, 'Image too large to compress below size limit');
+                                return;
+                            }
+                            
+                            tryCompress();
+                        } else {
+                            // Success! Image is now under size limit
+                            callback(compressedBlob, null);
+                        }
+                    }, 'image/jpeg', quality);
+                }
+                
+                tryCompress();
+            };
+            
+            img.onerror = function() {
+                callback(null, 'Failed to load image');
+            };
+            
+            img.src = e.target.result;
+        };
+        
+        reader.onerror = function() {
+            callback(null, 'Failed to read file');
+        };
+        
+        reader.readAsDataURL(file);
+    }
+    
+    // Function to process image files according to requirements:
+    // - If < 950KB: upload as-is (show preview)
+    // - If JPG > 950KB: resize until < 950KB (show preview)
+    // - If PNG > 950KB: convert to JPG and resize until < 950KB (show preview)
+    // Note: UI text shows "< 1MB" but actual target is 950KB
+    function processImageFile(input, file) {
+        const partno = input.getAttribute('data-partno');
+        const previewDiv = document.getElementById('image_preview_' + partno);
+        const previewImg = document.getElementById('preview_img_' + partno);
+        const previewInfo = document.getElementById('preview_info_' + partno);
+        
+        if (!file || !file.type.match(/^image\/(png|jpeg|jpg)$/i)) {
+            previewDiv.style.display = 'none';
+            return;
+        }
+        
+        const isPNG = file.type.toLowerCase() === 'image/png';
+        const isJPG = file.type.toLowerCase() === 'image/jpeg' || file.type.toLowerCase() === 'image/jpg';
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        
+        // If file is < 950KB (MAX_SIZE), no processing needed - just show preview
+        if (file.size < MAX_SIZE) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewDiv.style.display = 'block';
+                previewInfo.textContent = 'Original file: ' + fileSizeMB + ' MB (' + (isPNG ? 'PNG' : 'JPG') + ' - no resizing needed)';
+                previewInfo.style.color = '#28a745';
+            };
+            reader.readAsDataURL(file);
+            return;
+        }
+        
+        // File is >= 950KB (MAX_SIZE), needs processing
+        // Show loading message
+        previewDiv.style.display = 'block';
+        previewInfo.textContent = 'Processing image...';
+        previewInfo.style.color = '#666';
+        
+        // Process the image (resize and convert PNG to JPG if needed)
+        resizeImage(file, MAX_SIZE, function(processedBlob, error) {
+            if (error) {
+                previewInfo.textContent = 'Error: ' + error;
+                previewInfo.style.color = 'red';
+                return;
+            }
+            
+            if (!processedBlob) {
+                previewInfo.textContent = 'Error processing image';
+                previewInfo.style.color = 'red';
+                return;
+            }
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                const processedSizeMB = (processedBlob.size / (1024 * 1024)).toFixed(2);
+                const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                
+                let infoText = 'Original: ' + originalSizeMB + ' MB';
+                if (isPNG) {
+                    infoText += ' (PNG) → Converted to JPG and resized: ' + processedSizeMB + ' MB';
+                } else {
+                    infoText += ' (JPG) → Resized: ' + processedSizeMB + ' MB';
+                }
+                
+                previewInfo.textContent = infoText;
+                previewInfo.style.color = '#28a745';
+                
+                // Replace the file in the input with the processed version
+                const dataTransfer = new DataTransfer();
+                const newFileName = isPNG ? file.name.replace(/\.png$/i, '.jpg') : file.name;
+                const newFile = new File([processedBlob], newFileName, {
+                    type: 'image/jpeg',
+                    lastModified: Date.now()
+                });
+                dataTransfer.items.add(newFile);
+                input.files = dataTransfer.files;
+            };
+            reader.readAsDataURL(processedBlob);
+        });
+    }
+    
+    // Attach event listeners to all image file inputs
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageInputs = document.querySelectorAll('input.tsugi_image');
+        
+        imageInputs.forEach(function(input) {
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    processImageFile(input, file);
+                } else {
+                    const partno = input.getAttribute('data-partno');
+                    const previewDiv = document.getElementById('image_preview_' + partno);
+                    if (previewDiv) {
+                        previewDiv.style.display = 'none';
+                    }
+                }
+            });
+        });
+    });
+})();
 </script>
 <script src="https://cdn.ckeditor.com/ckeditor5/16.0.0/classic/ckeditor.js"></script>
 <script>

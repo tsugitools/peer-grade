@@ -559,7 +559,7 @@ function getDefaultJson()
               "type" : "code",
               "language" : "php"
             },
-            { "title" : "Image (JPG or PNG) of your home page (Maximum 1MB per file)",
+            { "title" : "Image (JPG or PNG) of your home page",
               "type" : "image"
             }
         ],
