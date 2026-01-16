@@ -428,19 +428,97 @@ if ( $submit_row == false ) {
         } else if ( $part->type == "url" ) {
             echo('<input name="input_url_'.$partno.'" type="url" size="80"></p>');
         } else if ( $part->type == "code" ) {
-            echo('<br/><textarea name="input_code_'.$partno.'" rows="10" style="width: 90%"></textarea></p>');
+            echo('<br/><span id="input_code_remaining_'.$partno.'">Characters remaining: 10000</span><br/>');
+            echo('<textarea name="input_code_'.$partno.'" id="input_code_'.$partno.'" rows="10" style="width: 90%" maxlength="10000"></textarea></p>');
         } else if ( $part->type == "html" ) {
             $html_items[] = $partno;
-            echo('<br/><textarea name="input_html_'.$partno.'" id="input_html_'.$partno.'" rows="10" style="width: 90%"></textarea></p>');
+            echo('<br/><span id="input_html_remaining_'.$partno.'">Characters remaining: 10000</span><br/>');
+            echo('<textarea name="input_html_'.$partno.'" id="input_html_'.$partno.'" rows="10" style="width: 90%" maxlength="10000"></textarea></p>');
         }
         $partno++;
     }
     echo("<p>Enter optional comments below</p>\n");
-    echo('<textarea rows="5" style="width: 90%" name="notes"></textarea><br/>');
+    echo('<span id="notes-remaining">Characters remaining: 1000</span><br/>');
+    echo('<textarea rows="5" style="width: 90%" name="notes" id="notes" maxlength="1000"></textarea><br/>');
     echo('<input type="submit" name="doSubmit" value="Submit" class="btn btn-default"> ');
     $OUTPUT->exitButton('Cancel');
     echo('</form>');
-
+    ?>
+    <script type="text/javascript">
+    (function() {
+        function initNotesCounter() {
+            var notesTextarea = document.getElementById('notes');
+            var notesRemaining = document.getElementById('notes-remaining');
+            
+            if (!notesTextarea || !notesRemaining) {
+                return; // Elements not found yet
+            }
+            
+            var maxLength = 1000;
+            
+            function updateRemaining() {
+                var remaining = maxLength - notesTextarea.value.length;
+                notesRemaining.textContent = 'Characters remaining: ' + remaining;
+            }
+            
+            notesTextarea.addEventListener('input', updateRemaining);
+            updateRemaining(); // Initialize on page load
+        }
+        
+        // Try to initialize immediately, or wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initNotesCounter);
+        } else {
+            initNotesCounter();
+        }
+        
+        function initCodeHtmlCounters() {
+            var maxLength = 10000;
+            
+            // Find all code textareas
+            var codeTextareas = document.querySelectorAll('textarea[id^="input_code_"]');
+            codeTextareas.forEach(function(textarea) {
+                var partno = textarea.id.replace('input_code_', '');
+                var remainingSpan = document.getElementById('input_code_remaining_' + partno);
+                
+                if (remainingSpan) {
+                    function updateRemaining() {
+                        var remaining = maxLength - textarea.value.length;
+                        remainingSpan.textContent = 'Characters remaining: ' + remaining;
+                    }
+                    
+                    textarea.addEventListener('input', updateRemaining);
+                    updateRemaining(); // Initialize on page load
+                }
+            });
+            
+            // Find all HTML textareas
+            var htmlTextareas = document.querySelectorAll('textarea[id^="input_html_"]');
+            htmlTextareas.forEach(function(textarea) {
+                var partno = textarea.id.replace('input_html_', '');
+                var remainingSpan = document.getElementById('input_html_remaining_' + partno);
+                
+                if (remainingSpan) {
+                    function updateRemaining() {
+                        var remaining = maxLength - textarea.value.length;
+                        remainingSpan.textContent = 'Characters remaining: ' + remaining;
+                    }
+                    
+                    textarea.addEventListener('input', updateRemaining);
+                    updateRemaining(); // Initialize on page load
+                }
+            });
+        }
+        
+        // Try to initialize immediately, or wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCodeHtmlCounters);
+        } else {
+            initCodeHtmlCounters();
+        }
+    })();
+    </script>
+    <?php
     // Make all the dialogs here
     $partno = 0;
     foreach ( $assn_json->parts as $part ) {
@@ -724,6 +802,31 @@ ClassicEditor.defaultConfig = {
             .create( document.querySelector( '#input_html_'+the_item )
             ).then(editor => {
                 // editor.isReadOnly = true;
+                // Add character counting for HTML editor
+                var remainingSpan = document.getElementById('input_html_remaining_' + the_item);
+                if (remainingSpan) {
+                    var maxLength = 10000;
+                    function getTextLength(data) {
+                        // Get plain text length (strip HTML tags for character count)
+                        var tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = data;
+                        var textLength = tempDiv.textContent || tempDiv.innerText || '';
+                        return textLength.length;
+                    }
+                    function updateRemaining() {
+                        var data = editor.getData();
+                        var textLength = getTextLength(data);
+                        var remaining = maxLength - textLength;
+                        remainingSpan.textContent = 'Characters remaining: ' + remaining;
+                        if (remaining < 0) {
+                            remainingSpan.style.color = 'red';
+                        } else {
+                            remainingSpan.style.color = '';
+                        }
+                    }
+                    editor.model.document.on('change:data', updateRemaining);
+                    updateRemaining(); // Initialize
+                }
             } ).catch( error => {
                 console.error( error );
             } );
